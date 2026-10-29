@@ -5,7 +5,7 @@ import { CLIENTS_LIST } from '../../data/content';
 
 export const ClientsSection: React.FC = () => {
   return (
-    <section id="clients" className="relative py-20 lg:py-28 bg-white border-b border-[#0A8BD3]/10 overflow-hidden">
+    <section id="clients" className="relative py-20 lg:py-28 surface-ice surface-ice--dots overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-14">

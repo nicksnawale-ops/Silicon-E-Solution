@@ -12,7 +12,7 @@ export const AboutUs: React.FC<AboutUsProps> = ({ onOpenQuote }) => {
     <section
       id="about"
       className="relative py-20 lg:py-28 overflow-hidden"
-      style={{ background: 'linear-gradient(180deg, #E3EEF8 0%, #E8F2FA 55%, #F7FBFE 100%)' }}
+      style={{ background: 'linear-gradient(180deg, #E3EEF8 0%, #E8F2FA 55%, #E4EFF8 100%)' }}
     >
       {/* Section divider: a soft centred hairline instead of a hard full-width border */}
       <div aria-hidden="true" className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 h-px w-[min(900px,80%)] bg-gradient-to-r from-transparent via-[#0A8BD3]/25 to-transparent" />

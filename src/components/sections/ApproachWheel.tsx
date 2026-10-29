@@ -140,7 +140,7 @@ export const ApproachWheel: React.FC = () => {
       id="approach"
       ref={sectionRef}
       onKeyDown={handleKeyDown}
-      className="relative w-full max-w-full overflow-x-clip py-16 sm:py-20 lg:py-28 bg-white border-b border-[#0A8BD3]/10"
+      className="relative w-full max-w-full overflow-x-clip py-16 sm:py-20 lg:py-28 surface-ice surface-ice--dots"
     >
       {/* Background soft radial glow - strictly constrained within container */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">

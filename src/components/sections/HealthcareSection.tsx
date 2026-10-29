@@ -26,7 +26,7 @@ const iconMap: Record<string, React.ElementType> = {
 
 export const HealthcareSection: React.FC = () => {
   return (
-    <section id="healthcare" className="relative py-20 lg:py-28 bg-white border-b border-[#0A8BD3]/10 overflow-hidden">
+    <section id="healthcare" className="relative py-20 lg:py-28 surface-ice surface-ice--dots overflow-hidden">
       {/* Background soft pulse ECG graphic */}
       <div className="absolute top-0 left-0 right-0 h-16 pointer-events-none opacity-20 overflow-hidden">
         <svg viewBox="0 0 1200 60" className="w-full h-full preserve-3d">
@@ -69,7 +69,7 @@ export const HealthcareSection: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: idx * 0.08 }}
-                className="relative group p-4 sm:p-5 rounded-2xl bg-[#F6FAFD] hover:bg-white border border-[#0A8BD3]/15 hover:border-[#0A8BD3]/40 shadow-xs hover:shadow-md transition-all flex items-center justify-between gap-4"
+                className="relative group p-4 sm:p-5 rounded-2xl bg-white/90 hover:bg-white border border-white ring-1 ring-[#0A8BD3]/10 shadow-[0_10px_24px_-18px_rgba(11,37,69,0.35)] hover:border-[#0A8BD3]/40 shadow-xs hover:shadow-md transition-all flex items-center justify-between gap-4"
               >
                 {/* Accent ribbon arrow mark */}
                 <div className="flex items-center gap-3 sm:gap-4">
