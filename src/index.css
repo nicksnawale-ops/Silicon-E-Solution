@@ -1,0 +1,147 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: 'Poppins', sans-serif;
+  --font-sans: 'Inter', sans-serif;
+  --color-brand-blue: #0A8BD3;
+  --color-brand-blue-deep: #0866A8;
+  --color-brand-navy: #0B2545;
+  --color-brand-sky: #4FC3F7;
+  --color-brand-ice: #E8F6FD;
+  --color-brand-lime: #8DC63F;
+  --color-surface: #FFFFFF;
+  --color-surface-alt: #F6FAFD;
+  --color-text-body: #4A5B6E;
+}
+
+:root {
+  --brand-blue: #0A8BD3;
+  --brand-blue-deep: #0866A8;
+  --brand-navy: #0B2545;
+  --brand-sky: #4FC3F7;
+  --brand-ice: #E8F6FD;
+  --brand-lime: #8DC63F;
+  --surface: #FFFFFF;
+  --surface-alt: #F6FAFD;
+  --text-body: #4A5B6E;
+  --border: rgba(10, 139, 211, 0.12);
+}
+
+html {
+  scroll-behavior: smooth;
+  font-family: 'Inter', sans-serif;
+  color: var(--text-body);
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+body {
+  background-color: #FFFFFF;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
+  overflow-wrap: anywhere;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+main, section, footer {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+/* Guard flex and grid children from overflowing containers */
+.grid > *, .flex > * {
+  min-width: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', sans-serif;
+  color: var(--brand-navy);
+}
+
+/* Ensure anchor links scroll with offset equal to navbar height */
+section, [id] {
+  scroll-margin-top: 90px;
+}
+
+/* Custom Hexagon Clip */
+.clip-hexagon {
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+.clip-hexagon-flat {
+  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+}
+
+/* Glassmorphism utility */
+.glass-card {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(10, 139, 211, 0.12);
+}
+
+.glass-card-hover {
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.35s ease;
+}
+
+.glass-card-hover:hover {
+  border-color: rgba(10, 139, 211, 0.3);
+  box-shadow: 0 20px 40px -15px rgba(10, 139, 211, 0.16);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #F0F7FC;
+}
+::-webkit-scrollbar-thumb {
+  background: #B9DCF2;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #0A8BD3;
+}
+
+/* ECG stroke animation */
+@keyframes ecgDraw {
+  0% {
+    stroke-dashoffset: 1000;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-ecg {
+  stroke-dasharray: 1000;
+  animation: ecgDraw 4s linear infinite;
+}
+
+/* Pulse soft */
+@keyframes softPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+.animate-soft-pulse {
+  animation: softPulse 3s ease-in-out infinite;
+}
+
+/* Hide default scrollbars in snap carousels */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
