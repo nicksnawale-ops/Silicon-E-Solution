@@ -9,7 +9,29 @@ interface AboutUsProps {
 
 export const AboutUs: React.FC<AboutUsProps> = ({ onOpenQuote }) => {
   return (
-    <section id="about" className="relative py-20 lg:py-28 bg-[#F6FAFD]/60 overflow-hidden">
+    <section
+      id="about"
+      className="relative py-20 lg:py-28 overflow-hidden"
+      style={{ background: 'linear-gradient(180deg, #E3EEF8 0%, #E8F2FA 55%, #F7FBFE 100%)' }}
+    >
+      {/* Section divider: a soft centred hairline instead of a hard full-width border */}
+      <div aria-hidden="true" className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 h-px w-[min(900px,80%)] bg-gradient-to-r from-transparent via-[#0A8BD3]/25 to-transparent" />
+
+      {/* Blueprint grid, faded at the edges */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          backgroundImage:
+            'linear-gradient(rgba(10,139,211,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(10,139,211,0.07) 1px, transparent 1px)',
+          backgroundSize: '56px 56px',
+          maskImage: 'radial-gradient(ellipse 75% 65% at 60% 45%, #000 25%, transparent 80%)',
+          WebkitMaskImage: 'radial-gradient(ellipse 75% 65% at 60% 45%, #000 25%, transparent 80%)',
+        }}
+      />
+      {/* Light pooling behind the image composition */}
+      <div aria-hidden="true" className="pointer-events-none absolute top-1/2 right-[8%] -translate-y-1/2 w-[640px] h-[640px] max-w-full rounded-full bg-[radial-gradient(closest-side,rgba(79,195,247,0.22),transparent)]" />
+
       {/* Decorative subtle hexagon background watermark */}
       <div className="absolute right-0 top-1/4 -translate-y-1/2 pointer-events-none opacity-20 overflow-hidden max-w-full">
         <svg width="400" height="400" viewBox="0 0 100 100" fill="none">
@@ -28,7 +50,7 @@ export const AboutUs: React.FC<AboutUsProps> = ({ onOpenQuote }) => {
         </svg>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           {/* Left Column: Narrative */}
           <div className="lg:col-span-6 space-y-6">
@@ -75,7 +97,7 @@ export const AboutUs: React.FC<AboutUsProps> = ({ onOpenQuote }) => {
               {ABOUT_TEXT.sectors.map((sec, idx) => (
                 <div
                   key={idx}
-                  className="p-3.5 rounded-xl bg-white border border-[#0A8BD3]/15 shadow-2xs flex items-start gap-3"
+                  className="p-3.5 rounded-xl bg-white border border-white ring-1 ring-[#0A8BD3]/10 shadow-[0_10px_24px_-18px_rgba(11,37,69,0.35)] flex items-start gap-3"
                 >
                   <CheckCircle2 className="w-4 h-4 text-[#8DC63F] shrink-0 mt-0.5" />
                   <div>

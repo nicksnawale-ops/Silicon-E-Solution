@@ -11,7 +11,7 @@ import { useReducedMotion } from '../../hooks/useReducedMotion';
  * Place it as the first child of a `relative` white section. Everything animates
  * with transform / opacity / clip-path only.
  */
-export const HorizonEdge: React.FC = () => {
+export const HorizonEdge: React.FC<{ fill?: string }> = ({ fill = '#FFFFFF' }) => {
   const ref = useRef<HTMLDivElement>(null);
   const prefersReduced = useReducedMotion();
 
@@ -49,7 +49,7 @@ export const HorizonEdge: React.FC = () => {
           viewBox="0 0 1440 120"
           preserveAspectRatio="none"
         >
-          <path d={`${curve} L1440,121 L0,121 Z`} fill="#FFFFFF" />
+          <path d={`${curve} L1440,121 L0,121 Z`} fill={fill} />
         </svg>
 
         {/* Stroke + glow, revealed from the centre outwards once in view */}
