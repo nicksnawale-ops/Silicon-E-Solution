@@ -503,7 +503,7 @@ export const SHOWCASE_ITEMS: SolutionShowcaseItem[] = [
       { label: 'Protocols', value: 'OSPF, BGP, VRRP, LACP' },
       { label: 'Redundancy', value: 'Dual Hot-Swap PSUs' },
     ],
-    highlight: 'Brochure Page 6 Featured',
+    highlight: 'Core Networking',
   },
   {
     id: 'rf-wireless',
@@ -519,7 +519,7 @@ export const SHOWCASE_ITEMS: SolutionShowcaseItem[] = [
       { label: 'Client Density', value: '1,000+ per AP' },
       { label: 'Security', value: 'WPA3 Enterprise + 802.1X' },
     ],
-    highlight: 'Brochure Page 6 Featured',
+    highlight: 'Wireless & RF',
   },
   {
     id: 'server-room',
@@ -535,7 +535,7 @@ export const SHOWCASE_ITEMS: SolutionShowcaseItem[] = [
       { label: 'Uptime Tier', value: 'Tier III Compliant' },
       { label: 'Cooling Design', value: 'Hot/Cold Aisle' },
     ],
-    highlight: 'Brochure Page 6 Featured',
+    highlight: 'Datacentre',
   },
   {
     id: 'security-system',
@@ -551,7 +551,7 @@ export const SHOWCASE_ITEMS: SolutionShowcaseItem[] = [
       { label: 'Barrier Cycle', value: '1.2s Fast Pass' },
       { label: 'Sensor Protection', value: 'IP68 Submersible' },
     ],
-    highlight: 'Brochure Page 6 Featured',
+    highlight: 'Physical Security',
   },
   {
     id: 'voice-solution',
@@ -567,7 +567,7 @@ export const SHOWCASE_ITEMS: SolutionShowcaseItem[] = [
       { label: 'Audio Quality', value: 'Opus & G.722 HD' },
       { label: 'Encryption', value: 'TLS & SRTP' },
     ],
-    highlight: 'Brochure Page 6 Featured',
+    highlight: 'Voice & UC',
   },
   {
     id: 'fapa-system',
@@ -583,7 +583,7 @@ export const SHOWCASE_ITEMS: SolutionShowcaseItem[] = [
       { label: 'Loop Capacity', value: '254 Devices / Loop' },
       { label: 'PA Intelligibility', value: 'STI > 0.65' },
     ],
-    highlight: 'Brochure Page 7 Featured',
+    highlight: 'Life Safety',
   },
   {
     id: 'bms-system',
@@ -599,7 +599,7 @@ export const SHOWCASE_ITEMS: SolutionShowcaseItem[] = [
       { label: 'Sensors Logged', value: '50,000+ Points' },
       { label: 'Efficiency Gain', value: '25% - 40% Energy' },
     ],
-    highlight: 'Brochure Page 7 Featured',
+    highlight: 'Building Automation',
   },
   {
     id: 'nurse-calling',
@@ -615,7 +615,7 @@ export const SHOWCASE_ITEMS: SolutionShowcaseItem[] = [
       { label: 'Response Logging', value: 'Millisecond Timestamped' },
       { label: 'Cabling', value: 'Cat6 Plug & Play' },
     ],
-    highlight: 'Brochure Page 7 Featured',
+    highlight: 'Healthcare Systems',
   },
   {
     id: 'passive-cabling-sol',
@@ -631,7 +631,7 @@ export const SHOWCASE_ITEMS: SolutionShowcaseItem[] = [
       { label: 'Fiber Types', value: 'OS2, OM3, OM4' },
       { label: 'Testing', value: '100% Fluke Certified' },
     ],
-    highlight: 'Brochure Page 7 Featured',
+    highlight: 'Passive Infrastructure',
   },
 ];
 

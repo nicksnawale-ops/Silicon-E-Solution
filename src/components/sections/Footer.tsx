@@ -25,10 +25,9 @@ export const Footer: React.FC = () => {
           <div className="lg:col-span-4 space-y-4 text-left">
             <a href="#home" className="inline-block focus:outline-none" aria-label="Silicon é Solution Home">
               <img
-                src="/assets/aistudio/Silicon_logo_b101dd61.png"
+                src="/assets/silicon-logo.png"
                 alt="Silicon é Solution"
                 className="h-10 w-auto object-contain hover:opacity-90 transition-opacity"
-                style={{ mixBlendMode: 'multiply' }}
               />
             </a>
 

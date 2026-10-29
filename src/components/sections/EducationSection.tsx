@@ -11,8 +11,6 @@ export const EducationSection: React.FC = () => {
         <div className="text-center max-w-3xl mx-auto mb-14">
           <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#0A8BD3] mb-2">
             <GraduationCap className="w-4 h-4 text-[#0A8BD3]" />
-            <span>Brochure Page 5 Specialization</span>
-            <span aria-hidden="true">·</span>
             <span>Academic Campuses</span>
           </div>
 
@@ -70,7 +68,7 @@ export const EducationSection: React.FC = () => {
           </div>
         </div>
 
-        {/* Department Chips Staggered Display (from brochure) */}
+        {/* Department Chips Staggered Display  */}
         <div className="mb-12">
           <p className="text-xs font-semibold text-center text-slate-500 uppercase tracking-wider mb-4">
             Custom Departmental Solutions Deployed Across:
@@ -92,7 +90,7 @@ export const EducationSection: React.FC = () => {
           </div>
         </div>
 
-        {/* 3 Department Feature Cards: Anatomy, Pathology, Biochemist (Brochure Page 5) */}
+        {/* 3 Department Feature Cards: Anatomy, Pathology, Biochemist */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {EDUCATION_SECTION.features.map((feat, idx) => (
             <motion.div

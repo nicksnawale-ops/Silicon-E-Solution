@@ -165,28 +165,28 @@ export default function App() {
           }}
         />
 
-        {/* 7-Step Turnkey Approach Wheel (Brochure Page 2) */}
+        {/* 7-Step Turnkey Approach Wheel */}
         <ApproachWheel />
 
-        {/* 15 Bento Services (Brochure Page 3) */}
+        {/* 15 Bento Services */}
         <ServicesGrid onSelectService={(service) => setSelectedService(service)} />
 
-        {/* Healthcare & Medical College ELV (Brochure Page 4) */}
+        {/* Healthcare & Medical College ELV */}
         <HealthcareSection />
 
-        {/* Campus & Medical College AV Solutions (Brochure Page 5) */}
+        {/* Campus & Medical College AV Solutions */}
         <EducationSection />
 
-        {/* Granular Technical Specifications Showcase (Brochure Pages 6 & 7) */}
+        {/* Granular Technical Specifications Showcase */}
         <SolutionsShowcase />
 
         {/* Why Choose Us */}
         <WhyChooseUs />
 
-        {/* Clientele Portfolio (Brochure Page 8) */}
+        {/* Clientele Portfolio */}
         <ClientsSection />
 
-        {/* Leadership Team (Brochure Page 8) */}
+        {/* Leadership Team */}
         <TeamSection />
 
         {/* High Conversion CTA Band */}
@@ -197,7 +197,7 @@ export default function App() {
           }}
         />
 
-        {/* Contact & Bavdhan Map (Brochure Page 8) */}
+        {/* Contact & Bavdhan Map */}
         <ContactSection />
       </main>
 

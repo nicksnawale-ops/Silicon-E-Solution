@@ -57,10 +57,9 @@ export const Preloader: React.FC<PreloaderProps> = ({ onComplete }) => {
                 className="relative z-10 flex items-center justify-center"
               >
                 <img
-                  src="/assets/aistudio/Silicon_logo_b101dd61.png"
+                  src="/assets/silicon-logo.png"
                   alt="Silicon é Solution"
                   className="h-14 sm:h-16 w-auto object-contain"
-                  style={{ mixBlendMode: 'multiply' }}
                 />
               </motion.div>
             </div>
