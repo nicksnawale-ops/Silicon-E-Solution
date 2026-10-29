@@ -80,11 +80,12 @@ const SERVICE_GROUPS: { key: ServiceItem['category']; label: string }[] = [
 ];
 
 const TABS: { key: TabKey; label: string; href?: string; dropdown?: boolean }[] = [
+  // Ordered to match the page: About → Approach → Services → Healthcare/Education → Solutions → Clients/Team → Contact
+  { key: 'company', label: 'Company', dropdown: true },
+  { key: 'approach', label: 'Approach', href: '#approach' },
   { key: 'services', label: 'Services', dropdown: true },
   { key: 'industries', label: 'Industries', dropdown: true },
   { key: 'solutions', label: 'Solutions', href: '#solutions' },
-  { key: 'approach', label: 'Approach', href: '#approach' },
-  { key: 'company', label: 'Company', dropdown: true },
   { key: 'contact', label: 'Contact', href: '#contact' },
 ];
 
@@ -656,6 +657,53 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenQuote, activeSection, onSe
             }}
           >
             <div className="flex flex-col space-y-0.5">
+              {/* Company accordion */}
+              <div>
+                <button
+                  type="button"
+                  onClick={() => setMobileCompanyOpen(!mobileCompanyOpen)}
+                  aria-expanded={mobileCompanyOpen}
+                  className={`w-full py-[14px] text-lg font-bold font-display flex items-center justify-between text-left transition-colors cursor-pointer ${
+                    isCompanyActive ? 'text-[#0A8BD3]' : 'text-[#0B2545]'
+                  }`}
+                >
+                  <span>Company</span>
+                  <ChevronDown
+                    className={`w-5 h-5 transition-transform duration-200 ${
+                      mobileCompanyOpen ? 'rotate-180 text-[#0A8BD3]' : 'text-slate-500'
+                    }`}
+                  />
+                </button>
+                {mobileCompanyOpen && (
+                  <div className="pl-3 pb-3 space-y-2 border-l-2 border-[#0A8BD3]/30 ml-2">
+                    {[
+                      ['About Us', '#about'],
+                      ['Our Clients', '#clients'],
+                      ['Our Team', '#team'],
+                    ].map(([label, href]) => (
+                      <button
+                        key={label}
+                        type="button"
+                        onClick={() => handleNavClick(href)}
+                        className="block w-full py-1 text-left text-sm font-medium text-slate-700 hover:text-[#0A8BD3]"
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => handleNavClick('#approach')}
+                className={`w-full py-[14px] text-lg font-bold font-display text-left transition-colors cursor-pointer ${
+                  isApproachActive ? 'text-[#0A8BD3]' : 'text-[#0B2545]'
+                }`}
+              >
+                Approach
+              </button>
+
               {/* Services accordion */}
               <div>
                 <button
@@ -737,53 +785,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenQuote, activeSection, onSe
               >
                 Solutions
               </button>
-
-              <button
-                type="button"
-                onClick={() => handleNavClick('#approach')}
-                className={`w-full py-[14px] text-lg font-bold font-display text-left transition-colors cursor-pointer ${
-                  isApproachActive ? 'text-[#0A8BD3]' : 'text-[#0B2545]'
-                }`}
-              >
-                Approach
-              </button>
-
-              {/* Company accordion */}
-              <div>
-                <button
-                  type="button"
-                  onClick={() => setMobileCompanyOpen(!mobileCompanyOpen)}
-                  aria-expanded={mobileCompanyOpen}
-                  className={`w-full py-[14px] text-lg font-bold font-display flex items-center justify-between text-left transition-colors cursor-pointer ${
-                    isCompanyActive ? 'text-[#0A8BD3]' : 'text-[#0B2545]'
-                  }`}
-                >
-                  <span>Company</span>
-                  <ChevronDown
-                    className={`w-5 h-5 transition-transform duration-200 ${
-                      mobileCompanyOpen ? 'rotate-180 text-[#0A8BD3]' : 'text-slate-500'
-                    }`}
-                  />
-                </button>
-                {mobileCompanyOpen && (
-                  <div className="pl-3 pb-3 space-y-2 border-l-2 border-[#0A8BD3]/30 ml-2">
-                    {[
-                      ['About Us', '#about'],
-                      ['Our Team', '#team'],
-                      ['Our Clients', '#clients'],
-                    ].map(([label, href]) => (
-                      <button
-                        key={label}
-                        type="button"
-                        onClick={() => handleNavClick(href)}
-                        className="block w-full py-1 text-left text-sm font-medium text-slate-700 hover:text-[#0A8BD3]"
-                      >
-                        {label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
 
               <button
                 type="button"
@@ -1026,16 +1027,16 @@ const COMPANY_LINKS = [
     Icon: Building2,
   },
   {
-    href: '#team',
-    title: 'Our Team',
-    desc: 'Leadership and engineering specialists behind every project.',
-    Icon: Users,
-  },
-  {
     href: '#clients',
     title: 'Our Clients',
     desc: 'Hospitals, universities and enterprises that trust us.',
     Icon: Award,
+  },
+  {
+    href: '#team',
+    title: 'Our Team',
+    desc: 'Leadership and engineering specialists behind every project.',
+    Icon: Users,
   },
 ];
 
