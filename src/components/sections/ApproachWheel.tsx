@@ -277,15 +277,16 @@ export const ApproachWheel: React.FC = () => {
           <div className="absolute top-1/2 left-[32%] -translate-x-1/2 -translate-y-1/2 w-[640px] h-[640px] bg-[radial-gradient(circle,rgba(10,139,211,0.08)_0%,transparent_70%)]" />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 w-full">
+        <div className="relative z-10 max-w-[1560px] mx-auto px-8 xl:px-12 w-full">
           {header(true)}
 
-          <div className="grid grid-cols-12 gap-8 xl:gap-12 items-center">
+          {/* Wheel anchored left, card anchored right, generous gap between them */}
+          <div className="flex items-center justify-between gap-10 xl:gap-16">
             {/* ---------------- Left: radial wheel ---------------- */}
-            <div className="col-span-7 flex justify-center">
+            <div className="flex-1 min-w-0 flex justify-center xl:justify-start">
               <div
-                className="relative aspect-square mx-auto select-none"
-                style={{ width: 'min(560px, calc(100vh - 330px), 100%)', minWidth: 400 }}
+                className="relative aspect-square select-none"
+                style={{ width: 'min(600px, calc(100vh - 330px), 100%)', minWidth: 400 }}
               >
                 <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full pointer-events-none z-0">
                   <defs>
@@ -429,7 +430,7 @@ export const ApproachWheel: React.FC = () => {
             </div>
 
             {/* ---------------- Right: premium phase card ---------------- */}
-            <div className="col-span-5 w-full max-w-xl mx-auto">
+            <div className="w-[44%] max-w-[600px] shrink-0">
               <div
                 className="relative rounded-[28px] bg-white text-left overflow-hidden"
                 style={{
