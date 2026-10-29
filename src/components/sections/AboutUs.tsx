@@ -110,7 +110,7 @@ export const AboutUs: React.FC<AboutUsProps> = ({ onOpenQuote }) => {
             </motion.div>
           </div>
 
-          {/* Right Column: Handshake / Skyline Image composition from brochure */}
+          {/* Right Column: Handshake / Skyline Image composition */}
           <div className="lg:col-span-6 relative">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
@@ -132,7 +132,7 @@ export const AboutUs: React.FC<AboutUsProps> = ({ onOpenQuote }) => {
                   }}
                 />
 
-                {/* Blue overlay reflecting brochure cover aesthetic */}
+                {/* Blue overlay  */}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0B2545]/90 via-[#0A8BD3]/35 to-transparent" />
 
                 {/* Content inside image */}

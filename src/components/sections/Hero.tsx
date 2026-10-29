@@ -211,7 +211,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
     >
       {/* Contained Decorative Background & Canvas */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Hexagon Honeycomb Background Layer (Brochure Page 1 Cover Motif) */}
+        {/* Hexagon Honeycomb Background Layer */}
         <div className="absolute inset-0 opacity-40">
           <svg
             className="w-full h-full object-cover"
@@ -391,10 +391,9 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
                   className="mb-1.5 sm:mb-2 flex items-center justify-center"
                 >
                   <img
-                    src="/assets/aistudio/Silicon_logo_b101dd61.png"
+                    src="/assets/silicon-logo.png"
                     alt="Silicon é Solution"
                     className="h-9 sm:h-12 w-auto object-contain drop-shadow-xs"
-                    style={{ mixBlendMode: 'multiply' }}
                   />
                 </motion.div>
                 <h3 className="text-[11px] sm:text-xs font-bold text-[#0B2545] font-display uppercase tracking-wider">

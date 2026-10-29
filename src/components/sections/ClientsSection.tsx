@@ -10,8 +10,6 @@ export const ClientsSection: React.FC = () => {
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-14">
           <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#0A8BD3] mb-2">
-            <span>Brochure Page 8 Clientele</span>
-            <span aria-hidden="true">·</span>
             <span>Institutional Partners</span>
           </div>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#0B2545] font-display tracking-tight">
@@ -34,7 +32,7 @@ export const ClientsSection: React.FC = () => {
               className="glass-card p-6 rounded-3xl border border-[#0A8BD3]/15 shadow-xs hover:border-[#0A8BD3]/35 hover:shadow-lg transition-all text-left flex flex-col justify-between group"
             >
               <div>
-                {/* Logo typography badge representing brochure logos */}
+                {/* Logo typography badge  */}
                 <div className="h-14 flex items-center justify-start border-b border-slate-100 pb-3 mb-4">
                   <div className="px-3.5 py-1.5 rounded-xl bg-[#F6FAFD] border border-[#0A8BD3]/15 group-hover:bg-[#E8F6FD] transition-colors">
                     <span className="text-xs font-black font-display tracking-wider text-[#0B2545] group-hover:text-[#0866A8]">

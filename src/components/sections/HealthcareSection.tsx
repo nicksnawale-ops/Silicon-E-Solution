@@ -45,8 +45,6 @@ export const HealthcareSection: React.FC = () => {
         <div className="max-w-3xl mb-14 text-left">
           <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#0A8BD3] mb-2">
             <Heart className="w-4 h-4 text-red-500 fill-red-500/20" />
-            <span>Brochure Page 4 Specialization</span>
-            <span aria-hidden="true">·</span>
             <span>Critical Care ELV</span>
           </div>
 
@@ -58,7 +56,7 @@ export const HealthcareSection: React.FC = () => {
           </p>
         </div>
 
-        {/* Arrow / Chevron Ribbon Cards (Brochure Page 4 design) */}
+        {/* Arrow / Chevron Ribbon Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-16">
           {HEALTHCARE_SECTION.elvItems.map((item, idx) => {
             const Icon = iconMap[item.icon] || Activity;
@@ -96,7 +94,7 @@ export const HealthcareSection: React.FC = () => {
           })}
         </div>
 
-        {/* 3 Large Featured Spotlight Image Cards (Bottom of Brochure Page 4) */}
+        {/* 3 Large Featured Spotlight Image Cards */}
         <div>
           <div className="text-left mb-6">
             <h3 className="text-lg sm:text-xl font-bold text-[#0B2545] font-display">

@@ -55,9 +55,13 @@ main, section, footer {
   min-width: 0;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Poppins', sans-serif;
-  color: var(--brand-navy);
+/* Base heading style lives in the base layer so Tailwind utilities
+   (e.g. text-white on dark cards) can override it. */
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
+    color: var(--brand-navy);
+  }
 }
 
 /* Ensure anchor links scroll with offset equal to navbar height */
