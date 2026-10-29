@@ -221,8 +221,15 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
     <section
       id="home"
       ref={containerRef}
-      className="relative min-h-[92vh] lg:min-h-screen pt-32 lg:pt-36 pb-36 sm:pb-40 lg:pb-44 flex items-center bg-gradient-to-b from-[#F6FAFD] via-white to-[#E8F6FD]/40 overflow-hidden"
+      className="relative min-h-[92vh] lg:min-h-screen pt-32 lg:pt-36 pb-36 sm:pb-40 lg:pb-44 flex items-center overflow-hidden"
+      style={{ background: 'linear-gradient(180deg, #EAF3FB 0%, #E6F1FA 55%, #E1EDF8 100%)' }}
     >
+      {/* Ambient light: a soft lift behind the headline and a cool glow behind the hub */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -left-32 w-[900px] h-[700px] max-w-none rounded-full bg-[radial-gradient(closest-side,rgba(255,255,255,0.85),rgba(255,255,255,0))]" />
+        <div className="absolute top-[12%] right-[-8%] w-[760px] h-[760px] max-w-none rounded-full bg-[radial-gradient(closest-side,rgba(79,195,247,0.22),rgba(79,195,247,0))]" />
+        <div className="absolute bottom-[-20%] left-[30%] w-[700px] h-[500px] max-w-none rounded-full bg-[radial-gradient(closest-side,rgba(141,198,63,0.08),rgba(141,198,63,0))]" />
+      </div>
       {/* Contained Decorative Background & Canvas */}
       <motion.div className="absolute inset-0 overflow-hidden pointer-events-none" style={prefersReduced ? undefined : { y: bgY }}>
         {/* Hexagon Honeycomb Background Layer */}
