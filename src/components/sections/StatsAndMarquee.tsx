@@ -63,7 +63,30 @@ function Counter({ end, suffix }: { end: number; suffix: string }) {
 
 export const StatsAndMarquee: React.FC = () => {
   return (
-    <section className="relative py-12 bg-white border-y border-[#0A8BD3]/10 overflow-hidden">
+    <section
+      className="relative z-20 -mt-12 sm:-mt-16 pt-14 sm:pt-16 pb-12 bg-white rounded-t-[28px] sm:rounded-t-[44px] border-b border-[#0A8BD3]/10 overflow-hidden"
+      style={{
+        boxShadow: '0 -24px 60px -28px rgba(11, 37, 69, 0.18), 0 -1px 0 rgba(10, 139, 211, 0.08)',
+      }}
+    >
+      {/* Seam accent: a network line that draws itself across the top of the sheet,
+          with a glowing data packet travelling along it. */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 flex justify-center">
+        <div className="relative mt-5 sm:mt-6 h-px w-[min(560px,70%)]">
+          <motion.span
+            className="absolute inset-0 origin-center bg-gradient-to-r from-transparent via-[#0A8BD3]/60 to-transparent"
+            initial={{ scaleX: 0, opacity: 0 }}
+            whileInView={{ scaleX: 1, opacity: 1 }}
+            viewport={{ once: true, amount: 1 }}
+            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+          />
+          <span className="seam-packet absolute inset-0 motion-reduce:hidden">
+            <span className="absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-[#8DC63F] shadow-[0_0_10px_2px_rgba(141,198,63,0.55)]" />
+          </span>
+          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-white border border-[#0A8BD3]/50" />
+        </div>
+      </div>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* 4 Stat Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
@@ -163,6 +186,16 @@ export const StatsAndMarquee: React.FC = () => {
       </div>
 
       <style>{`
+        @keyframes seam-packet {
+          0% { transform: translateX(0%); opacity: 0; }
+          15% { opacity: 1; }
+          85% { opacity: 1; }
+          100% { transform: translateX(100%); opacity: 0; }
+        }
+        .seam-packet {
+          animation: seam-packet 4.5s cubic-bezier(0.45, 0, 0.55, 1) 1.2s infinite;
+          opacity: 0;
+        }
         @keyframes client-marquee {
           from { transform: translateX(0); }
           to { transform: translateX(-50%); }
