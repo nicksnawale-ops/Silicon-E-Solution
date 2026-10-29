@@ -1,6 +1,29 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion, useInView } from 'motion/react';
+import { HeartPulse, GraduationCap, Building2 } from 'lucide-react';
 import { STATS, CLIENTS_LIST } from '../../data/content';
+
+type SectorKind = 'healthcare' | 'education' | 'enterprise';
+
+const SECTOR_THEME: Record<SectorKind, { gradient: string; accent: string; Icon: React.ElementType }> = {
+  healthcare: { gradient: 'linear-gradient(135deg, #0A8BD3 0%, #4FC3F7 100%)', accent: '#0A8BD3', Icon: HeartPulse },
+  education: { gradient: 'linear-gradient(135deg, #0A8BD3 0%, #8DC63F 100%)', accent: '#6FA82F', Icon: GraduationCap },
+  enterprise: { gradient: 'linear-gradient(135deg, #0B2545 0%, #0A8BD3 100%)', accent: '#0B2545', Icon: Building2 },
+};
+
+const sectorKind = (sector: string, name: string): SectorKind => {
+  const text = `${sector} ${name}`.toLowerCase();
+  if (/hospital|health/.test(text)) return 'healthcare';
+  if (/univ|education|campus|college|institute/.test(text)) return 'education';
+  return 'enterprise';
+};
+
+/** Two-letter monogram from a client's wordmark: "SYMBIOSIS HOSPITAL" -> "SH", "ANIBRAIN" -> "AN". */
+const monogram = (logoText: string) => {
+  const words = logoText.split(/\s+/).filter(Boolean);
+  const letters = words.length > 1 ? words[0][0] + words[1][0] : (words[0] ?? '').slice(0, 2);
+  return letters.toUpperCase();
+};
 
 function Counter({ end, suffix }: { end: number; suffix: string }) {
   const [count, setCount] = useState(0);
@@ -63,45 +86,86 @@ export const StatsAndMarquee: React.FC = () => {
             </motion.div>
           ))}
         </div>
+      </div>
 
-        {/* Marquee Header */}
-        <div className="mt-12 text-center">
-          <p className="text-xs font-semibold uppercase tracking-widest text-[#0A8BD3]">
-            Trusted by Leading Educational, Healthcare & Enterprise Giants
+      {/* Trusted-by strip */}
+      <div className="relative mt-14">
+        {/* Eyebrow with hairlines */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.6 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center gap-4"
+        >
+          <span className="hidden sm:block h-px flex-1 max-w-[180px] bg-gradient-to-r from-transparent to-[#0A8BD3]/35" />
+          <p className="text-center text-[11px] sm:text-xs font-semibold uppercase tracking-[0.18em] text-[#0A8BD3]">
+            Trusted by Leading Educational, Healthcare &amp; Enterprise Giants
           </p>
-        </div>
+          <span className="hidden sm:block h-px flex-1 max-w-[180px] bg-gradient-to-l from-transparent to-[#0A8BD3]/35" />
+        </motion.div>
 
-        {/* Infinite Pause-on-Hover Client Marquee */}
-        <div className="relative mt-6 overflow-hidden py-3 mask-marquee">
-          {/* Subtle gradient side fades */}
-          <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
-          <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
-
-          <div className="flex gap-8 w-max animate-[marquee_30s_linear_infinite] hover:[animation-play-state:paused]">
-            {[...CLIENTS_LIST, ...CLIENTS_LIST, ...CLIENTS_LIST].map((client, idx) => (
-              <div
-                key={idx}
-                className="flex items-center gap-3 px-6 py-3 rounded-xl bg-[#F6FAFD] border border-[#0A8BD3]/15 hover:border-[#0A8BD3]/40 hover:bg-white transition-all shadow-2xs shrink-0 cursor-default"
+        {/* Full-width seamless marquee; edges fade via mask (no overlay on the cards) */}
+        <div
+          className="group/marquee relative mt-7 overflow-hidden py-4"
+          style={{
+            maskImage: 'linear-gradient(to right, transparent 0, #000 9%, #000 91%, transparent 100%)',
+            WebkitMaskImage: 'linear-gradient(to right, transparent 0, #000 9%, #000 91%, transparent 100%)',
+          }}
+        >
+          <div className="flex w-max animate-[client-marquee_42s_linear_infinite] group-hover/marquee:[animation-play-state:paused] motion-reduce:animate-none">
+            {[0, 1].map((copy) => (
+              <ul
+                key={copy}
+                aria-hidden={copy === 1 ? true : undefined}
+                className="flex shrink-0 items-stretch gap-5 pr-5"
               >
-                <div className="w-2 h-2 rounded-full bg-[#8DC63F]" />
-                <div className="text-left">
-                  <span className="text-xs sm:text-sm font-bold text-[#0B2545] font-display">
-                    {client.name}
-                  </span>
-                  <span className="block text-[10px] text-slate-500 font-medium">
-                    {client.sector} · {client.location}
-                  </span>
-                </div>
-              </div>
+                {CLIENTS_LIST.map((client) => {
+                  const kind = sectorKind(client.sector, client.name);
+                  const theme = SECTOR_THEME[kind];
+                  const Icon = theme.Icon;
+                  return (
+                    <li
+                      key={`${copy}-${client.name}`}
+                      className="group/client relative flex items-center gap-3.5 pl-3 pr-6 py-3 rounded-2xl bg-white border border-[#0A8BD3]/12 shadow-[0_8px_24px_-16px_rgba(11,37,69,0.28)] transition-[transform,box-shadow,border-color] duration-300 ease-out hover:-translate-y-1 hover:border-[#0A8BD3]/35 hover:shadow-[0_18px_36px_-18px_rgba(10,139,211,0.45)]"
+                    >
+                      {/* Sector-coded monogram */}
+                      <span
+                        className="relative w-11 h-11 rounded-xl flex items-center justify-center shrink-0 text-white font-display font-bold text-[13px] tracking-wide overflow-hidden"
+                        style={{ background: theme.gradient }}
+                      >
+                        <span className="absolute inset-0 bg-gradient-to-b from-white/25 to-transparent" aria-hidden="true" />
+                        <span className="relative">{monogram(client.logoText)}</span>
+                      </span>
+
+                      <span className="min-w-0 text-left">
+                        <span className="block whitespace-nowrap font-display text-[14px] font-semibold text-[#0B2545] group-hover/client:text-[#0A8BD3] transition-colors">
+                          {client.name}
+                        </span>
+                        <span className="mt-0.5 flex items-center gap-1.5 whitespace-nowrap text-[11px] font-medium text-slate-500">
+                          <Icon className="w-3 h-3 shrink-0" style={{ color: theme.accent }} aria-hidden="true" />
+                          <span>{client.sector}</span>
+                          <span className="text-slate-300" aria-hidden="true">•</span>
+                          <span>{client.location}</span>
+                        </span>
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
             ))}
           </div>
         </div>
+
+        <p className="mt-3 text-center text-xs text-slate-500">
+          …and many more institutions across India
+        </p>
       </div>
 
       <style>{`
-        @keyframes marquee {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
+        @keyframes client-marquee {
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
         }
       `}</style>
     </section>
