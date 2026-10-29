@@ -27,17 +27,18 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
   const isHeroInView = useInView(containerRef, { amount: 0.1 });
   const prefersReduced = useReducedMotion();
 
-  // Scroll-linked exit: as the hero scrolls away, its content gently recedes
-  // (drift up, scale down, fade) and the background moves slower for depth.
+  // Scroll-linked exit with parallax depth.
   // Transform/opacity only, so it stays on the GPU and doesn't cause layout work.
   const { scrollYProgress: heroProgress } = useScroll({
     target: containerRef,
     offset: ['start start', 'end start'],
   });
-  const contentY = useTransform(heroProgress, [0, 1], [0, -90]);
-  const contentScale = useTransform(heroProgress, [0, 1], [1, 0.94]);
-  const contentOpacity = useTransform(heroProgress, [0, 0.35, 0.85], [1, 0.9, 0]);
-  const bgY = useTransform(heroProgress, [0, 1], [0, 140]);
+  // Content lingers (moves slower than the page) so the next section's horizon
+  // glides over it; it only fades once it's mostly out of view.
+  const contentY = useTransform(heroProgress, [0, 1], [0, 160]);
+  const contentScale = useTransform(heroProgress, [0, 1], [1, 0.96]);
+  const contentOpacity = useTransform(heroProgress, [0, 0.55, 0.95], [1, 1, 0]);
+  const bgY = useTransform(heroProgress, [0, 1], [0, 220]);
   const indicatorOpacity = useTransform(heroProgress, [0, 0.12], [1, 0]);
 
   // Lightweight network node canvas with travelling packets
@@ -220,7 +221,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
     <section
       id="home"
       ref={containerRef}
-      className="relative min-h-[92vh] lg:min-h-screen pt-32 lg:pt-36 pb-32 sm:pb-36 flex items-center bg-gradient-to-b from-[#F6FAFD] via-white to-[#E8F6FD]/40 overflow-hidden"
+      className="relative min-h-[92vh] lg:min-h-screen pt-32 lg:pt-36 pb-36 sm:pb-40 lg:pb-44 flex items-center bg-gradient-to-b from-[#F6FAFD] via-white to-[#E8F6FD]/40 overflow-hidden"
     >
       {/* Contained Decorative Background & Canvas */}
       <motion.div className="absolute inset-0 overflow-hidden pointer-events-none" style={prefersReduced ? undefined : { y: bgY }}>
@@ -484,7 +485,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
 
       {/* Animated Scroll Down Indicator */}
       <motion.div
-        className="absolute bottom-16 sm:bottom-20 left-1/2 -translate-x-1/2 hidden sm:flex flex-col items-center gap-1 text-slate-400 pointer-events-none"
+        className="absolute bottom-20 sm:bottom-28 lg:bottom-32 left-1/2 -translate-x-1/2 hidden sm:flex flex-col items-center gap-1 text-slate-400 pointer-events-none"
         style={prefersReduced ? undefined : { opacity: indicatorOpacity }}
       >
         <span className="text-[10px] uppercase tracking-widest font-mono">Scroll</span>

@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { motion, useInView } from 'motion/react';
 import { HeartPulse, GraduationCap, Building2 } from 'lucide-react';
 import { STATS, CLIENTS_LIST } from '../../data/content';
+import { HorizonEdge } from '../ui/HorizonEdge';
 
 type SectorKind = 'healthcare' | 'education' | 'enterprise';
 
@@ -63,29 +64,9 @@ function Counter({ end, suffix }: { end: number; suffix: string }) {
 
 export const StatsAndMarquee: React.FC = () => {
   return (
-    <section
-      className="relative z-20 -mt-12 sm:-mt-16 pt-14 sm:pt-16 pb-12 bg-white rounded-t-[28px] sm:rounded-t-[44px] border-b border-[#0A8BD3]/10 overflow-hidden"
-      style={{
-        boxShadow: '0 -24px 60px -28px rgba(11, 37, 69, 0.18), 0 -1px 0 rgba(10, 139, 211, 0.08)',
-      }}
-    >
-      {/* Seam accent: a network line that draws itself across the top of the sheet,
-          with a glowing data packet travelling along it. */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 flex justify-center">
-        <div className="relative mt-5 sm:mt-6 h-px w-[min(560px,70%)]">
-          <motion.span
-            className="absolute inset-0 origin-center bg-gradient-to-r from-transparent via-[#0A8BD3]/60 to-transparent"
-            initial={{ scaleX: 0, opacity: 0 }}
-            whileInView={{ scaleX: 1, opacity: 1 }}
-            viewport={{ once: true, amount: 1 }}
-            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-          />
-          <span className="seam-packet absolute inset-0 motion-reduce:hidden">
-            <span className="absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-[#8DC63F] shadow-[0_0_10px_2px_rgba(141,198,63,0.55)]" />
-          </span>
-          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-white border border-[#0A8BD3]/50" />
-        </div>
-      </div>
+    <section className="relative z-20 pt-10 sm:pt-12 pb-12 bg-white border-b border-[#0A8BD3]/10 overflow-x-clip">
+      {/* Curved horizon rising into the hero */}
+      <HorizonEdge />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* 4 Stat Cards */}
@@ -93,10 +74,10 @@ export const StatsAndMarquee: React.FC = () => {
           {STATS.map((stat, idx) => (
             <motion.div
               key={idx}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 28, filter: 'blur(10px)' }}
+              whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               viewport={{ once: true, amount: 0.3 }}
-              transition={{ duration: 0.5, delay: idx * 0.1 }}
+              transition={{ duration: 0.9, delay: 0.15 + idx * 0.09, ease: [0.22, 1, 0.36, 1] }}
               className="glass-card p-5 sm:p-6 rounded-2xl border border-[#0A8BD3]/15 shadow-xs hover:border-[#0A8BD3]/30 hover:shadow-md transition-all text-left group"
             >
               <div className="text-3xl sm:text-4xl font-extrabold text-[#0B2545] font-display flex items-baseline gap-1 group-hover:text-[#0A8BD3] transition-colors">
@@ -186,16 +167,6 @@ export const StatsAndMarquee: React.FC = () => {
       </div>
 
       <style>{`
-        @keyframes seam-packet {
-          0% { transform: translateX(0%); opacity: 0; }
-          15% { opacity: 1; }
-          85% { opacity: 1; }
-          100% { transform: translateX(100%); opacity: 0; }
-        }
-        .seam-packet {
-          animation: seam-packet 4.5s cubic-bezier(0.45, 0, 0.55, 1) 1.2s infinite;
-          opacity: 0;
-        }
         @keyframes client-marquee {
           from { transform: translateX(0); }
           to { transform: translateX(-50%); }
