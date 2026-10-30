@@ -5,7 +5,7 @@ import { EDUCATION_SECTION } from '../../data/content';
 
 export const EducationSection: React.FC = () => {
   return (
-    <section id="education" className="relative py-20 lg:py-28 bg-[#F6FAFD]/50 border-b border-[#0A8BD3]/10 overflow-hidden">
+    <section id="education" className="relative py-20 lg:py-28 surface-ice surface-ice--grid overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-14">

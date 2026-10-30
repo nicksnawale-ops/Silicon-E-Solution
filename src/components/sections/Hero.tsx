@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { motion, useInView } from 'motion/react';
+import { motion, useInView, useScroll, useTransform } from 'motion/react';
 import {
   ArrowRight,
   PhoneCall,
@@ -26,6 +26,20 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const isHeroInView = useInView(containerRef, { amount: 0.1 });
   const prefersReduced = useReducedMotion();
+
+  // Scroll-linked exit with parallax depth.
+  // Transform/opacity only, so it stays on the GPU and doesn't cause layout work.
+  const { scrollYProgress: heroProgress } = useScroll({
+    target: containerRef,
+    offset: ['start start', 'end start'],
+  });
+  // Content lingers (moves slower than the page) so the next section's horizon
+  // glides over it; it only fades once it's mostly out of view.
+  const contentY = useTransform(heroProgress, [0, 1], [0, 160]);
+  const contentScale = useTransform(heroProgress, [0, 1], [1, 0.96]);
+  const contentOpacity = useTransform(heroProgress, [0, 0.55, 0.95], [1, 1, 0]);
+  const bgY = useTransform(heroProgress, [0, 1], [0, 220]);
+  const indicatorOpacity = useTransform(heroProgress, [0, 0.12], [1, 0]);
 
   // Lightweight network node canvas with travelling packets
   useEffect(() => {
@@ -207,10 +221,17 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
     <section
       id="home"
       ref={containerRef}
-      className="relative min-h-[92vh] lg:min-h-screen pt-32 lg:pt-36 pb-16 flex items-center bg-gradient-to-b from-[#F6FAFD] via-white to-[#E8F6FD]/40 overflow-hidden"
+      className="relative min-h-[92vh] lg:min-h-screen pt-32 lg:pt-36 pb-36 sm:pb-40 lg:pb-44 flex items-center overflow-hidden"
+      style={{ background: 'linear-gradient(180deg, #EAF3FB 0%, #E6F1FA 55%, #E1EDF8 100%)' }}
     >
+      {/* Ambient light: a soft lift behind the headline and a cool glow behind the hub */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -left-32 w-[900px] h-[700px] max-w-none rounded-full bg-[radial-gradient(closest-side,rgba(255,255,255,0.85),rgba(255,255,255,0))]" />
+        <div className="absolute top-[12%] right-[-8%] w-[760px] h-[760px] max-w-none rounded-full bg-[radial-gradient(closest-side,rgba(79,195,247,0.22),rgba(79,195,247,0))]" />
+        <div className="absolute bottom-[-20%] left-[30%] w-[700px] h-[500px] max-w-none rounded-full bg-[radial-gradient(closest-side,rgba(141,198,63,0.08),rgba(141,198,63,0))]" />
+      </div>
       {/* Contained Decorative Background & Canvas */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <motion.div className="absolute inset-0 overflow-hidden pointer-events-none" style={prefersReduced ? undefined : { y: bgY }}>
         {/* Hexagon Honeycomb Background Layer */}
         <div className="absolute inset-0 opacity-40">
           <svg
@@ -265,9 +286,12 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
           ref={canvasRef}
           className="absolute inset-0 w-full h-full z-0"
         />
-      </div>
+      </motion.div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+      <motion.div
+        className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full origin-top will-change-transform"
+        style={prefersReduced ? undefined : { y: contentY, scale: contentScale, opacity: contentOpacity }}
+      >
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           {/* Left Column: Headline, Narrative & CTAs */}
           <div className="lg:col-span-7 space-y-6 text-left">
@@ -464,10 +488,13 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
             </motion.div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Animated Scroll Down Indicator */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-slate-400 pointer-events-none">
+      <motion.div
+        className="absolute bottom-20 sm:bottom-28 lg:bottom-32 left-1/2 -translate-x-1/2 hidden sm:flex flex-col items-center gap-1 text-slate-400 pointer-events-none"
+        style={prefersReduced ? undefined : { opacity: indicatorOpacity }}
+      >
         <span className="text-[10px] uppercase tracking-widest font-mono">Scroll</span>
         <div className="w-5 h-8 rounded-full border-2 border-slate-300 flex justify-center pt-1">
           <motion.div
@@ -476,7 +503,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
             className="w-1.5 h-1.5 rounded-full bg-[#0A8BD3]"
           />
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 };

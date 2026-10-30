@@ -149,3 +149,67 @@ section, [id] {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* ------------------------------------------------------------------ */
+/* Premium ice-blue section surfaces                                   */
+/* One shared tone family so every section joins seamlessly; the       */
+/* texture variant changes per section for rhythm. Decorative layers   */
+/* sit behind content via isolation + z-index:-1 (no markup changes).  */
+/* ------------------------------------------------------------------ */
+.surface-ice {
+  position: relative;
+  isolation: isolate;
+  /* Starts and ends on the same tone (#E4EFF8) so stacked sections join with
+     no visible seam; the lighter lift and glows stay clear of the edges. */
+  background:
+    radial-gradient(38% 32% at 18% 38%, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 100%),
+    radial-gradient(34% 34% at 88% 55%, rgba(79, 195, 247, 0.13), rgba(79, 195, 247, 0) 100%),
+    linear-gradient(180deg, #E4EFF8 0%, #EAF3FB 45%, #E9F2FA 60%, #E4EFF8 100%);
+}
+
+/* Soft centred hairline between sections instead of a hard full-width border */
+.surface-ice::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: min(900px, 80%);
+  height: 1px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, transparent, rgba(10, 139, 211, 0.22), transparent);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.surface-ice--dots::before,
+.surface-ice--grid::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.surface-ice--dots::before {
+  background-image: radial-gradient(rgba(10, 139, 211, 0.15) 1px, transparent 1px);
+  background-size: 22px 22px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 45%, #000 15%, transparent 75%);
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 45%, #000 15%, transparent 75%);
+  opacity: 0.7;
+}
+
+.surface-ice--grid::before {
+  background-image:
+    linear-gradient(rgba(10, 139, 211, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(10, 139, 211, 0.07) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 45%, #000 20%, transparent 80%);
+  mask-image: radial-gradient(ellipse 75% 65% at 50% 45%, #000 20%, transparent 80%);
+}
+
+/* Slightly deeper tone to ground the page at the footer */
+.surface-ice--deep {
+  background:
+    radial-gradient(40% 40% at 18% 45%, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0) 100%),
+    linear-gradient(180deg, #E4EFF8 0%, #DDEAF6 40%, #D8E7F4 100%);
+}

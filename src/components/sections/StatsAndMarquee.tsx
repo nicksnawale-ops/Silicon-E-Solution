@@ -2,6 +2,11 @@ import React, { useEffect, useState, useRef } from 'react';
 import { motion, useInView } from 'motion/react';
 import { HeartPulse, GraduationCap, Building2 } from 'lucide-react';
 import { STATS, CLIENTS_LIST } from '../../data/content';
+import { HorizonEdge } from '../ui/HorizonEdge';
+
+/** Soft ice-blue surface shared with the About section below for a continuous band. */
+export const SURFACE_TOP = '#EDF5FB';
+export const SURFACE_BOTTOM = '#E3EEF8';
 
 type SectorKind = 'healthcare' | 'education' | 'enterprise';
 
@@ -63,18 +68,48 @@ function Counter({ end, suffix }: { end: number; suffix: string }) {
 
 export const StatsAndMarquee: React.FC = () => {
   return (
-    <section className="relative py-12 bg-white border-y border-[#0A8BD3]/10 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section
+      className="relative z-20 pt-10 sm:pt-12 pb-16 overflow-x-clip"
+      style={{ background: `linear-gradient(180deg, ${SURFACE_TOP} 0%, ${SURFACE_BOTTOM} 100%)` }}
+    >
+      {/* Curved horizon rising into the hero (same colour as this section's top) */}
+      <HorizonEdge fill={SURFACE_TOP} />
+
+      {/* Ambient light + fine dot texture */}
+      {/* Faded at top and bottom so the glows never form a visible edge against
+          the horizon above or the About section below. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 overflow-hidden"
+        style={{
+          maskImage: 'linear-gradient(180deg, transparent 0%, #000 18%, #000 78%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(180deg, transparent 0%, #000 18%, #000 78%, transparent 100%)',
+        }}
+      >
+        <div className="absolute top-[8%] -left-40 w-[620px] h-[620px] rounded-full bg-[radial-gradient(closest-side,rgba(79,195,247,0.18),transparent)]" />
+        <div className="absolute top-[20%] -right-48 w-[560px] h-[560px] rounded-full bg-[radial-gradient(closest-side,rgba(141,198,63,0.10),transparent)]" />
+        <div
+          className="absolute inset-0 opacity-60"
+          style={{
+            backgroundImage: 'radial-gradient(rgba(10,139,211,0.16) 1px, transparent 1px)',
+            backgroundSize: '22px 22px',
+            maskImage: 'radial-gradient(ellipse 70% 60% at 50% 40%, #000 20%, transparent 75%)',
+            WebkitMaskImage: 'radial-gradient(ellipse 70% 60% at 50% 40%, #000 20%, transparent 75%)',
+          }}
+        />
+      </div>
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* 4 Stat Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {STATS.map((stat, idx) => (
             <motion.div
               key={idx}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 28, filter: 'blur(10px)' }}
+              whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               viewport={{ once: true, amount: 0.3 }}
-              transition={{ duration: 0.5, delay: idx * 0.1 }}
-              className="glass-card p-5 sm:p-6 rounded-2xl border border-[#0A8BD3]/15 shadow-xs hover:border-[#0A8BD3]/30 hover:shadow-md transition-all text-left group"
+              transition={{ duration: 0.9, delay: 0.15 + idx * 0.09, ease: [0.22, 1, 0.36, 1] }}
+              className="relative p-5 sm:p-6 rounded-2xl bg-white border border-white shadow-[0_1px_2px_rgba(11,37,69,0.04),0_12px_32px_-18px_rgba(11,37,69,0.28)] ring-1 ring-[#0A8BD3]/8 hover:-translate-y-1 hover:shadow-[0_2px_4px_rgba(11,37,69,0.04),0_22px_44px_-20px_rgba(10,139,211,0.40)] transition-[transform,box-shadow] duration-300 text-left group"
             >
               <div className="text-3xl sm:text-4xl font-extrabold text-[#0B2545] font-display flex items-baseline gap-1 group-hover:text-[#0A8BD3] transition-colors">
                 <Counter end={stat.value} suffix={stat.suffix} />
@@ -89,7 +124,7 @@ export const StatsAndMarquee: React.FC = () => {
       </div>
 
       {/* Trusted-by strip */}
-      <div className="relative mt-14">
+      <div className="relative mt-14 z-[1]">
         {/* Eyebrow with hairlines */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}

@@ -9,7 +9,7 @@ export const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="relative bg-[#E8F6FD]/50 border-t border-[#0A8BD3]/15 text-slate-600 pt-16 pb-12 overflow-hidden">
+    <footer className="relative surface-ice surface-ice--deep text-slate-600 pt-16 pb-12 overflow-hidden">
       {/* Animated Network Line along top edge */}
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#0A8BD3] to-transparent overflow-hidden">
         <motion.div

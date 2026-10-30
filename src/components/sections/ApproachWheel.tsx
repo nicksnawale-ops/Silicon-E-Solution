@@ -1,5 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import React, { useState, useRef } from 'react';
+import {
+  motion,
+  AnimatePresence,
+  useScroll,
+  useTransform,
+  useMotionValueEvent,
+  MotionValue,
+} from 'motion/react';
 import {
   Lightbulb,
   ClipboardCheck,
@@ -10,13 +17,13 @@ import {
   ShieldCheck,
   Layers,
   ArrowRight,
-  ArrowLeft,
   CheckCircle2,
-  Play,
-  Pause,
+  ChevronsDown,
+  BadgeCheck,
 } from 'lucide-react';
 import { APPROACH_STEPS } from '../../data/content';
 import { useIsDesktop } from '../../hooks/useIsMobile';
+import { useReducedMotion } from '../../hooks/useReducedMotion';
 
 const iconMap: Record<string, React.ElementType> = {
   ClipboardCheck,
@@ -26,6 +33,20 @@ const iconMap: Record<string, React.ElementType> = {
   GraduationCap,
   ShieldCheck,
   Layers,
+};
+
+const STEP_COUNT = APPROACH_STEPS.length;
+/** Scroll distance (in viewport heights) spent on each phase while the section is pinned. */
+const VH_PER_STEP = 55;
+/** Fixed navbar height once scrolled; the pinned stage sits right under it. */
+const NAV_OFFSET = 64;
+const EASE_OUT: [number, number, number, number] = [0.22, 1, 0.36, 1];
+
+/** Maps overall pinned-scroll progress (0..1) to the active phase index and progress within it. */
+const phaseFromProgress = (v: number) => {
+  const x = Math.min(Math.max(v, 0), 1) * STEP_COUNT;
+  const index = Math.min(STEP_COUNT - 1, Math.floor(x));
+  return { index, within: Math.min(1, x - index) };
 };
 
 const PHASE_DELIVERABLES: Record<number, string[]> = {
@@ -66,436 +87,92 @@ const PHASE_DELIVERABLES: Record<number, string[]> = {
   ],
 };
 
+/** 7-segment progress bar: finished phases full, current phase fills with scroll. */
+const SegmentedProgress: React.FC<{ activeIndex: number; within: MotionValue<number> }> = ({
+  activeIndex,
+  within,
+}) => (
+  <div className="flex items-center gap-1.5" aria-hidden="true">
+    {APPROACH_STEPS.map((s, i) => (
+      <span key={s.id} className="relative h-1 flex-1 rounded-full bg-[#0A8BD3]/12 overflow-hidden">
+        {i < activeIndex && (
+          <span className="absolute inset-0 rounded-full bg-gradient-to-r from-[#0A8BD3] to-[#4FC3F7]" />
+        )}
+        {i === activeIndex && (
+          <motion.span
+            className="absolute inset-0 rounded-full bg-gradient-to-r from-[#0A8BD3] to-[#8DC63F] origin-left"
+            style={{ scaleX: within }}
+          />
+        )}
+      </span>
+    ))}
+  </div>
+);
+
 export const ApproachWheel: React.FC = () => {
   const isDesktop = useIsDesktop(1024);
-  const [activeStepId, setActiveStepId] = useState<number>(1);
-  const [isHoveredWheel, setIsHoveredWheel] = useState<boolean>(false);
-  const [hasUserInteracted, setHasUserInteracted] = useState<boolean>(false);
-  const [isInView, setIsInView] = useState<boolean>(false);
+  const prefersReduced = useReducedMotion();
+  const [activeIndex, setActiveIndex] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
 
-  const activeStep = APPROACH_STEPS.find((s) => s.id === activeStepId) || APPROACH_STEPS[0];
+  // Progress runs 0→1 across the pinned range: from the section reaching the
+  // navbar until its bottom reaches the bottom of the viewport.
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: [`start ${NAV_OFFSET}px`, 'end end'],
+  });
+  const withinPhase = useTransform(scrollYProgress, (v) => phaseFromProgress(v).within);
+
+  useMotionValueEvent(scrollYProgress, 'change', (v) => {
+    const { index } = phaseFromProgress(v);
+    setActiveIndex((prev) => (prev === index ? prev : index));
+  });
+
+  const activeStep = APPROACH_STEPS[activeIndex];
   const activeDeliverables = PHASE_DELIVERABLES[activeStep.id] || [];
+  const nextStep = APPROACH_STEPS[activeIndex + 1];
+  const ActiveIcon = iconMap[activeStep.iconName] || Layers;
 
-  // Track if section is in viewport (Desktop only)
-  useEffect(() => {
-    if (!isDesktop) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsInView(entry.isIntersecting);
-      },
-      { threshold: 0.15 }
-    );
-    if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => observer.disconnect();
-  }, [isDesktop]);
-
-  // Auto-advance through phases every 4s on desktop when in view
-  useEffect(() => {
-    if (!isDesktop || hasUserInteracted || isHoveredWheel || !isInView) return;
-
-    const timer = setInterval(() => {
-      if (document.hidden) return;
-      setActiveStepId((prev) => (prev % APPROACH_STEPS.length) + 1);
-    }, 4000);
-
-    return () => clearInterval(timer);
-  }, [isDesktop, hasUserInteracted, isHoveredWheel, isInView]);
-
-  const handleSelectPhase = (stepId: number, isDirectClick = true) => {
-    if (isDirectClick) {
-      setHasUserInteracted(true);
-    }
-    setActiveStepId(stepId);
+  /** Clicking a node scrolls to the middle of that phase's range, keeping scroll and state in sync. */
+  const scrollToPhase = (index: number) => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const top = el.getBoundingClientRect().top + window.scrollY - NAV_OFFSET;
+    const range = el.offsetHeight - (window.innerHeight - NAV_OFFSET);
+    window.scrollTo({
+      top: top + ((index + 0.5) / STEP_COUNT) * range,
+      behavior: prefersReduced ? 'auto' : 'smooth',
+    });
   };
 
-  const handlePrevPhase = () => {
-    setHasUserInteracted(true);
-    setActiveStepId((prev) => (prev === 1 ? APPROACH_STEPS.length : prev - 1));
-  };
-
-  const handleNextPhase = () => {
-    setHasUserInteracted(true);
-    setActiveStepId((prev) => (prev % APPROACH_STEPS.length) + 1);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (!isDesktop) return;
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-      e.preventDefault();
-      handleNextPhase();
-    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-      e.preventDefault();
-      handlePrevPhase();
-    }
-  };
-
-  // Circumference for outer dashed ring with radius = 38%
   const ringRadius = 38;
-  const circumference = 2 * Math.PI * ringRadius;
 
-  return (
-    <section
-      id="approach"
-      ref={sectionRef}
-      onKeyDown={handleKeyDown}
-      className="relative w-full max-w-full overflow-x-clip py-16 sm:py-20 lg:py-28 bg-white border-b border-[#0A8BD3]/10"
-    >
-      {/* Background soft radial glow - strictly constrained within container */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[radial-gradient(circle,rgba(10,139,211,0.06)_0%,transparent_70%)]" />
+  const header = (compact: boolean) => (
+    <div className={`max-w-3xl mx-auto text-center ${compact ? 'mb-5 xl:mb-7 [@media(max-height:820px)]:mb-4' : 'mb-10 sm:mb-12'}`}>
+      <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#0A8BD3] mb-2">
+        <span>Turnkey IT & AV Delivery</span>
       </div>
+      <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#0B2545] font-display tracking-tight">
+        Our Approach: Solutions & Services
+      </h2>
+      <p className={`text-slate-600 text-sm sm:text-base mt-2 leading-relaxed ${compact ? '[@media(max-height:820px)]:hidden' : ''}`}>
+        Turnkey execution for IT, Networking, Voice, UPS, and Audio & Visual infrastructure — structured into 7 rigorous engineering phases from initial concept to lifecycle handover.
+      </p>
+    </div>
+  );
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center w-full max-w-full">
-        {/* Section Header */}
-        <div className="max-w-3xl mx-auto mb-10 sm:mb-12 lg:mb-16">
-          <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#0A8BD3] mb-2">
-            <span>Turnkey IT & AV Delivery</span>
-          </div>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#0B2545] font-display tracking-tight">
-            Our Approach: Solutions & Services
-          </h2>
-          <p className="text-slate-600 text-sm sm:text-base mt-3 leading-relaxed">
-            Turnkey execution for IT, Networking, Voice, UPS, and Audio & Visual infrastructure — structured into 7 rigorous engineering phases from initial concept to lifecycle handover.
-          </p>
-        </div>
-
-        {/* ======================================================== */}
-        {/* DESKTOP (>= 1024px) RADIAL WHEEL VIEW                   */}
-        {/* ======================================================== */}
-        {isDesktop ? (
-          <div className="w-full">
-            <div className="grid grid-cols-12 gap-8 lg:gap-12 items-center">
-              {/* Left Column (55%): Radial Interactive Wheel */}
-              <div className="col-span-7 flex flex-col items-center justify-center">
-                <div
-                  onMouseEnter={() => setIsHoveredWheel(true)}
-                  onMouseLeave={() => setIsHoveredWheel(false)}
-                  className="relative w-[500px] h-[500px] lg:w-[540px] lg:h-[540px] xl:w-[580px] xl:h-[580px] max-w-full aspect-square mx-auto select-none"
-                >
-                  {/* SVG Background Layer: Connecting lines, dashed ring, and progress arc */}
-                  <svg
-                    viewBox="0 0 100 100"
-                    className="absolute inset-0 w-full h-full pointer-events-none z-0"
-                  >
-                    <defs>
-                      <linearGradient id="activeLineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#0A8BD3" />
-                        <stop offset="100%" stopColor="#8DC63F" />
-                      </linearGradient>
-                      <linearGradient id="progressRingGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#0A8BD3" />
-                        <stop offset="50%" stopColor="#4FC3F7" />
-                        <stop offset="100%" stopColor="#8DC63F" />
-                      </linearGradient>
-                    </defs>
-
-                    {/* Outer base dashed ring */}
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r={ringRadius}
-                      stroke="rgba(10, 139, 211, 0.22)"
-                      strokeWidth="0.5"
-                      strokeDasharray="1.5 1.5"
-                      fill="none"
-                    />
-
-                    {/* Colored progress arc showing active phase */}
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r={ringRadius}
-                      stroke="url(#progressRingGrad)"
-                      strokeWidth="0.9"
-                      strokeDasharray={`${(activeStepId / 7) * circumference} ${circumference}`}
-                      strokeDashoffset="0"
-                      strokeLinecap="round"
-                      fill="none"
-                      transform="rotate(-90 50 50)"
-                      style={{ transition: 'stroke-dasharray 0.4s ease' }}
-                    />
-
-                    {/* Connector lines radiating from center to each node */}
-                    {APPROACH_STEPS.map((step, idx) => {
-                      const angleRad = (-90 + idx * (360 / 7)) * (Math.PI / 180);
-                      const innerR = 19;
-                      const outerR = ringRadius;
-                      const x1 = 50 + innerR * Math.cos(angleRad);
-                      const y1 = 50 + innerR * Math.sin(angleRad);
-                      const x2 = 50 + outerR * Math.cos(angleRad);
-                      const y2 = 50 + outerR * Math.sin(angleRad);
-                      const isSelected = activeStepId === step.id;
-
-                      return (
-                        <g key={step.id}>
-                          <line
-                            x1={x1}
-                            y1={y1}
-                            x2={x2}
-                            y2={y2}
-                            stroke={isSelected ? 'url(#activeLineGrad)' : 'rgba(10, 139, 211, 0.15)'}
-                            strokeWidth={isSelected ? '0.9' : '0.4'}
-                            style={{ transition: 'stroke 0.3s ease, stroke-width 0.3s ease' }}
-                          />
-                          {isSelected && (
-                            <circle r="1" fill="#8DC63F">
-                              <animate
-                                attributeName="cx"
-                                from={x1}
-                                to={x2}
-                                dur="1.6s"
-                                repeatCount="indefinite"
-                              />
-                              <animate
-                                attributeName="cy"
-                                from={y1}
-                                to={y2}
-                                dur="1.6s"
-                                repeatCount="indefinite"
-                              />
-                              <animate
-                                attributeName="opacity"
-                                values="0;1;0"
-                                dur="1.6s"
-                                repeatCount="indefinite"
-                              />
-                            </circle>
-                          )}
-                        </g>
-                      );
-                    })}
-                  </svg>
-
-                  {/* Central Circle */}
-                  <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] lg:w-[220px] lg:h-[220px] rounded-full glass-card p-5 shadow-2xl border-2 border-[#0A8BD3]/25 flex flex-col items-center justify-center text-center z-10 pointer-events-none">
-                    <AnimatePresence mode="wait">
-                      <motion.div
-                        key={activeStep.id}
-                        initial={{ opacity: 0, scale: 0.92 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.92 }}
-                        transition={{ duration: 0.25 }}
-                        className="flex flex-col items-center justify-center"
-                      >
-                        <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-[#0A8BD3] to-[#8DC63F] text-white flex items-center justify-center shadow-md mb-2">
-                          <Lightbulb className="w-5 h-5 animate-pulse" />
-                        </div>
-
-                        <span className="text-[10px] font-mono font-bold tracking-widest text-[#0A8BD3] uppercase">
-                          Phase 0{activeStep.id} of 07
-                        </span>
-
-                        <h3 className="text-xs sm:text-sm font-bold text-[#0B2545] font-display max-w-[160px] line-clamp-2 mt-0.5 leading-snug">
-                          {activeStep.title}
-                        </h3>
-
-                        <p className="text-[10px] text-slate-500 max-w-[160px] line-clamp-1 mt-1 leading-tight font-medium">
-                          {activeStep.shortDesc}
-                        </p>
-                      </motion.div>
-                    </AnimatePresence>
-                  </div>
-
-                  {/* 7 Phase Nodes on the Outer Ring */}
-                  {APPROACH_STEPS.map((step, idx) => {
-                    const angleDeg = -90 + idx * (360 / 7);
-                    const angleRad = angleDeg * (Math.PI / 180);
-                    const x = 50 + ringRadius * Math.cos(angleRad);
-                    const y = 50 + ringRadius * Math.sin(angleRad);
-                    const isSelected = activeStepId === step.id;
-                    const Icon = iconMap[step.iconName] || Layers;
-
-                    return (
-                      <div
-                        key={step.id}
-                        style={{
-                          left: `${x}%`,
-                          top: `${y}%`,
-                          transform: 'translate(-50%, -50%)',
-                        }}
-                        className="absolute z-20 flex flex-col items-center"
-                      >
-                        {/* Node Trigger Button */}
-                        <button
-                          type="button"
-                          onClick={() => handleSelectPhase(step.id, true)}
-                          onMouseEnter={() => handleSelectPhase(step.id, false)}
-                          aria-label={`Phase 0${step.id}: ${step.title}`}
-                          className={`group relative w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center cursor-pointer transition-all duration-300 ${
-                            isSelected
-                              ? 'bg-gradient-to-tr from-[#0A8BD3] to-[#4FC3F7] text-white shadow-xl shadow-[#0A8BD3]/35 ring-4 ring-[#8DC63F]/35 scale-110'
-                              : 'bg-white/95 text-[#0A8BD3] border border-[#0A8BD3]/25 hover:border-[#0A8BD3] hover:scale-105 shadow-md hover:shadow-lg'
-                          }`}
-                        >
-                          <Icon
-                            className={`w-5 h-5 sm:w-6 sm:h-6 transition-transform duration-300 ${
-                              isSelected ? 'scale-110 text-white' : 'text-[#0A8BD3] group-hover:scale-110'
-                            }`}
-                          />
-
-                          {/* Number Badge */}
-                          <span
-                            className={`absolute -top-1 -right-1 w-5 h-5 rounded-full text-[10px] font-mono font-bold flex items-center justify-center text-white border-2 border-white shadow-xs transition-colors ${
-                              isSelected ? 'bg-[#8DC63F]' : 'bg-[#0B2545]'
-                            }`}
-                          >
-                            0{step.id}
-                          </span>
-                        </button>
-
-                        {/* Phase Title Label below node */}
-                        <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-28 sm:w-32 text-center pointer-events-none select-none">
-                          <span
-                            className={`block text-[11px] sm:text-xs leading-tight line-clamp-2 transition-colors ${
-                              isSelected
-                                ? 'font-bold text-[#0866A8]'
-                                : 'font-medium text-[#0B2545]/85'
-                            }`}
-                          >
-                            {step.title}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Status bar & auto-play indicator under wheel */}
-                <div className="mt-8 flex items-center gap-3 text-xs text-slate-500 font-mono">
-                  <span className="flex items-center gap-1.5">
-                    {hasUserInteracted ? (
-                      <Pause className="w-3.5 h-3.5 text-slate-400" />
-                    ) : isHoveredWheel ? (
-                      <Pause className="w-3.5 h-3.5 text-[#0A8BD3]" />
-                    ) : (
-                      <Play className="w-3.5 h-3.5 text-[#8DC63F] animate-pulse" />
-                    )}
-                    <span>
-                      {hasUserInteracted
-                        ? 'Manual selection'
-                        : isHoveredWheel
-                        ? 'Paused on hover'
-                        : 'Auto-advancing (4s)'}
-                    </span>
-                  </span>
-                  <span className="text-slate-300">|</span>
-                  <span>Use ← → keys to switch</span>
-                </div>
-              </div>
-
-              {/* Right Column (45%): Active Phase Detail Card */}
-              <div className="col-span-5 w-full max-w-xl mx-auto">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={activeStep.id}
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -15 }}
-                    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                    className="glass-card p-6 sm:p-8 rounded-3xl border border-[#0A8BD3]/25 shadow-xl text-left flex flex-col justify-between"
-                  >
-                    <div>
-                      {/* Header meta badge */}
-                      <div className="flex items-center justify-between gap-3 mb-3 pb-3 border-b border-[#0A8BD3]/10">
-                        <div className="flex items-center gap-2">
-                          <span className="px-2.5 py-1 rounded-lg bg-[#E8F6FD] text-[#0A8BD3] text-xs font-mono font-bold">
-                            PHASE 0{activeStep.id} / 07
-                          </span>
-                          <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                            Lifecycle Delivery
-                          </span>
-                        </div>
-                        <div
-                          className="w-8 h-8 rounded-xl flex items-center justify-center text-white shrink-0 shadow-xs"
-                          style={{ backgroundColor: activeStep.color }}
-                        >
-                          {React.createElement(iconMap[activeStep.iconName] || Layers, {
-                            className: 'w-4 h-4',
-                          })}
-                        </div>
-                      </div>
-
-                      <h3 className="text-xl sm:text-2xl font-bold text-[#0B2545] font-display">
-                        {activeStep.title}
-                      </h3>
-                      <p className="text-xs sm:text-sm font-semibold text-[#0A8BD3] uppercase tracking-wider mt-0.5">
-                        {activeStep.shortDesc}
-                      </p>
-
-                      <p className="text-slate-600 text-sm leading-relaxed mt-4">
-                        {activeStep.fullDesc}
-                      </p>
-
-                      {/* Engineering Deliverables */}
-                      <div className="mt-6 pt-4 border-t border-slate-100">
-                        <h4 className="text-xs font-bold uppercase tracking-wider text-[#0B2545] mb-2.5">
-                          Key Engineering Milestones
-                        </h4>
-                        <ul className="space-y-2">
-                          {activeDeliverables.map((item, idx) => (
-                            <li
-                              key={idx}
-                              className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-600 leading-snug"
-                            >
-                              <CheckCircle2 className="w-4 h-4 text-[#8DC63F] shrink-0 mt-0.5" />
-                              <span>{item}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-
-                    {/* Navigation controls */}
-                    <div className="mt-8 pt-4 border-t border-[#0A8BD3]/15 flex items-center justify-between gap-3">
-                      <button
-                        type="button"
-                        onClick={handlePrevPhase}
-                        className="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-[#0B2545] hover:text-[#0A8BD3] text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
-                      >
-                        <ArrowLeft className="w-3.5 h-3.5" />
-                        <span>Previous</span>
-                      </button>
-
-                      {/* Step pills */}
-                      <div className="flex items-center gap-1">
-                        {APPROACH_STEPS.map((s) => (
-                          <button
-                            key={s.id}
-                            type="button"
-                            onClick={() => handleSelectPhase(s.id, true)}
-                            aria-label={`Go to phase 0${s.id}`}
-                            className={`w-6 h-6 rounded-lg text-[10px] font-mono font-bold transition-all cursor-pointer ${
-                              activeStepId === s.id
-                                ? 'bg-[#0A8BD3] text-white shadow-xs scale-105'
-                                : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
-                            }`}
-                          >
-                            {s.id}
-                          </button>
-                        ))}
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={handleNextPhase}
-                        className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#0A8BD3] to-[#4FC3F7] text-white text-xs font-semibold shadow-xs hover:shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
-                      >
-                        <span>Next</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-            </div>
-          </div>
-        ) : (
-          /* ======================================================== */
-          /* MOBILE & TABLET (< 1024px) STRICT VERTICAL TIMELINE     */
-          /* Zero horizontal movement, fully native touch scroll      */
-          /* ======================================================== */
+  // ================================================================
+  // MOBILE & TABLET (< 1024px): plain vertical timeline, no pinning
+  // ================================================================
+  if (!isDesktop) {
+    return (
+      <section
+        id="approach"
+        className="relative w-full max-w-full overflow-x-clip py-16 sm:py-20 surface-ice surface-ice--dots"
+      >
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 w-full max-w-full">
+          {header(false)}
+          {/* Strict vertical timeline: zero horizontal movement, native touch scroll */}
           <ol className="relative w-full max-w-full flex flex-col gap-6 text-left p-0 m-0 list-none">
             {/* The vertical line: absolute, left: 15px, top: 0, bottom: 0, width: 2px */}
             <div className="absolute left-[15px] top-3 bottom-6 w-[2px] bg-[#0A8BD3]/25 pointer-events-none" />
@@ -575,7 +252,295 @@ export const ApproachWheel: React.FC = () => {
               );
             })}
           </ol>
-        )}
+        </div>
+      </section>
+    );
+  }
+
+  // ================================================================
+  // DESKTOP (>= 1024px): pinned stage, phases advance with scroll
+  // ================================================================
+  return (
+    <section
+      id="approach"
+      ref={sectionRef}
+      className="relative w-full max-w-full surface-ice surface-ice--dots"
+      style={{ height: `calc(${STEP_COUNT * VH_PER_STEP}vh + 100vh - ${NAV_OFFSET}px)` }}
+      aria-label="Our approach: seven delivery phases"
+    >
+      <div
+        className="sticky w-full overflow-hidden flex flex-col"
+        style={{ top: NAV_OFFSET, height: `calc(100vh - ${NAV_OFFSET}px)`, justifyContent: 'safe center' }}
+      >
+        {/* Soft radial glow behind the wheel */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/2 left-[32%] -translate-x-1/2 -translate-y-1/2 w-[640px] h-[640px] bg-[radial-gradient(circle,rgba(10,139,211,0.08)_0%,transparent_70%)]" />
+        </div>
+
+        <div className="relative z-10 max-w-[1560px] mx-auto px-8 xl:px-12 w-full">
+          {header(true)}
+
+          {/* Wheel anchored left, card anchored right, generous gap between them */}
+          <div className="flex items-center justify-between gap-10 xl:gap-16">
+            {/* ---------------- Left: radial wheel ---------------- */}
+            <div className="flex-1 min-w-0 flex justify-center xl:justify-start">
+              <div
+                className="relative aspect-square select-none"
+                style={{ width: 'min(600px, calc(100vh - 330px), 100%)', minWidth: 400 }}
+              >
+                <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full pointer-events-none z-0">
+                  <defs>
+                    <linearGradient id="activeLineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#0A8BD3" />
+                      <stop offset="100%" stopColor="#8DC63F" />
+                    </linearGradient>
+                    <linearGradient id="progressRingGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#0A8BD3" />
+                      <stop offset="50%" stopColor="#4FC3F7" />
+                      <stop offset="100%" stopColor="#8DC63F" />
+                    </linearGradient>
+                  </defs>
+
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r={ringRadius}
+                    stroke="rgba(10, 139, 211, 0.22)"
+                    strokeWidth="0.5"
+                    strokeDasharray="1.5 1.5"
+                    fill="none"
+                  />
+
+                  {/* Progress ring follows scroll continuously */}
+                  <motion.circle
+                    cx="50"
+                    cy="50"
+                    r={ringRadius}
+                    stroke="url(#progressRingGrad)"
+                    strokeWidth="0.9"
+                    strokeLinecap="round"
+                    fill="none"
+                    transform="rotate(-90 50 50)"
+                    style={{ pathLength: scrollYProgress }}
+                  />
+
+                  {APPROACH_STEPS.map((step, idx) => {
+                    const angleRad = (-90 + idx * (360 / STEP_COUNT)) * (Math.PI / 180);
+                    const x1 = 50 + 19 * Math.cos(angleRad);
+                    const y1 = 50 + 19 * Math.sin(angleRad);
+                    const x2 = 50 + ringRadius * Math.cos(angleRad);
+                    const y2 = 50 + ringRadius * Math.sin(angleRad);
+                    const isSelected = idx === activeIndex;
+                    return (
+                      <g key={step.id}>
+                        <line
+                          x1={x1}
+                          y1={y1}
+                          x2={x2}
+                          y2={y2}
+                          stroke={isSelected ? 'url(#activeLineGrad)' : 'rgba(10, 139, 211, 0.15)'}
+                          strokeWidth={isSelected ? '0.9' : '0.4'}
+                          style={{ transition: 'stroke 0.3s ease, stroke-width 0.3s ease' }}
+                        />
+                        {isSelected && !prefersReduced && (
+                          <circle r="1" fill="#8DC63F">
+                            <animate attributeName="cx" from={x1} to={x2} dur="1.6s" repeatCount="indefinite" />
+                            <animate attributeName="cy" from={y1} to={y2} dur="1.6s" repeatCount="indefinite" />
+                            <animate attributeName="opacity" values="0;1;0" dur="1.6s" repeatCount="indefinite" />
+                          </circle>
+                        )}
+                      </g>
+                    );
+                  })}
+                </svg>
+
+                {/* Centre */}
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[38%] aspect-square rounded-full glass-card p-4 shadow-2xl border-2 border-[#0A8BD3]/25 flex flex-col items-center justify-center text-center z-10 pointer-events-none">
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.div
+                      key={activeStep.id}
+                      initial={{ opacity: 0, scale: 0.92 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.92 }}
+                      transition={{ duration: 0.25 }}
+                      className="flex flex-col items-center justify-center"
+                    >
+                      <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-[#0A8BD3] to-[#8DC63F] text-white flex items-center justify-center shadow-md mb-2">
+                        <Lightbulb className="w-5 h-5" />
+                      </div>
+                      <span className="text-[10px] font-mono font-bold tracking-widest text-[#0A8BD3] uppercase">
+                        Phase 0{activeStep.id} of 07
+                      </span>
+                      <h3 className="text-sm font-bold text-[#0B2545] font-display max-w-[160px] line-clamp-2 mt-0.5 leading-snug">
+                        {activeStep.title}
+                      </h3>
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+
+                {/* Nodes */}
+                {APPROACH_STEPS.map((step, idx) => {
+                  const angleRad = (-90 + idx * (360 / STEP_COUNT)) * (Math.PI / 180);
+                  const x = 50 + ringRadius * Math.cos(angleRad);
+                  const y = 50 + ringRadius * Math.sin(angleRad);
+                  const isSelected = idx === activeIndex;
+                  const isDone = idx < activeIndex;
+                  const Icon = iconMap[step.iconName] || Layers;
+                  return (
+                    <div
+                      key={step.id}
+                      style={{ left: `${x}%`, top: `${y}%`, transform: 'translate(-50%, -50%)' }}
+                      className="absolute z-20 flex flex-col items-center"
+                    >
+                      <button
+                        type="button"
+                        onClick={() => scrollToPhase(idx)}
+                        aria-label={`Go to phase 0${step.id}: ${step.title}`}
+                        aria-current={isSelected ? 'step' : undefined}
+                        className={`group relative w-14 h-14 xl:w-16 xl:h-16 rounded-full flex items-center justify-center cursor-pointer transition-all duration-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#0A8BD3]/40 ${
+                          isSelected
+                            ? 'bg-gradient-to-tr from-[#0A8BD3] to-[#4FC3F7] text-white shadow-xl shadow-[#0A8BD3]/35 ring-4 ring-[#8DC63F]/35 scale-110'
+                            : isDone
+                            ? 'bg-white text-[#0A8BD3] border border-[#0A8BD3]/50 shadow-md hover:scale-105'
+                            : 'bg-white/95 text-[#0A8BD3] border border-[#0A8BD3]/25 hover:border-[#0A8BD3] hover:scale-105 shadow-md hover:shadow-lg'
+                        }`}
+                      >
+                        <Icon className={`w-5 h-5 xl:w-6 xl:h-6 ${isSelected ? 'text-white' : 'text-[#0A8BD3]'}`} />
+                        <span
+                          className={`absolute -top-1 -right-1 w-5 h-5 rounded-full text-[10px] font-mono font-bold flex items-center justify-center text-white border-2 border-white shadow-xs transition-colors ${
+                            isSelected || isDone ? 'bg-[#8DC63F]' : 'bg-[#0B2545]'
+                          }`}
+                        >
+                          0{step.id}
+                        </span>
+                      </button>
+                      <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-32 text-center pointer-events-none select-none">
+                        <span
+                          className={`block text-[11px] xl:text-xs leading-tight line-clamp-2 transition-colors ${
+                            isSelected ? 'font-bold text-[#0866A8]' : 'font-medium text-[#0B2545]/85'
+                          }`}
+                        >
+                          {step.title}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* ---------------- Right: premium phase card ---------------- */}
+            <div className="w-[44%] max-w-[600px] shrink-0">
+              <div
+                className="relative rounded-[28px] bg-white text-left overflow-hidden"
+                style={{
+                  boxShadow:
+                    '0 1px 2px rgba(11,37,69,0.05), 0 24px 60px -24px rgba(11,37,69,0.30), 0 0 0 1px rgba(10,139,211,0.10)',
+                }}
+              >
+                {/* Gradient top edge */}
+                <div className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-[#0A8BD3] via-[#4FC3F7] to-[#8DC63F]" />
+                {/* Soft corner light */}
+                <div className="pointer-events-none absolute -top-24 -right-24 w-72 h-72 rounded-full bg-[radial-gradient(closest-side,rgba(79,195,247,0.18),transparent)]" />
+
+                <div className="relative p-7 xl:p-9 [@media(max-height:820px)]:p-6">
+                  {/* Progress */}
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#0A8BD3]">
+                      Phase {String(activeStep.id).padStart(2, '0')}
+                      <span className="text-slate-400 font-semibold"> / 07</span>
+                    </span>
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">
+                      Lifecycle Delivery
+                    </span>
+                  </div>
+                  <SegmentedProgress activeIndex={activeIndex} within={withinPhase} />
+
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.div
+                      key={activeStep.id}
+                      initial={{ opacity: 0, y: 14, filter: 'blur(6px)' }}
+                      animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                      exit={{ opacity: 0, y: -10, filter: 'blur(4px)' }}
+                      transition={{ duration: 0.4, ease: EASE_OUT }}
+                      className="relative"
+                    >
+                      {/* Icon tile + large outlined phase number on one row, title below */}
+                      <div className="pt-6 [@media(max-height:820px)]:pt-4 flex items-end justify-between gap-4">
+                        <span className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#0A8BD3] to-[#4FC3F7] text-white flex items-center justify-center shrink-0 shadow-[0_10px_24px_-10px_rgba(10,139,211,0.7)]">
+                          <ActiveIcon className="w-6 h-6" />
+                        </span>
+                        <span
+                          aria-hidden="true"
+                          className="font-display font-extrabold text-[64px] xl:text-[72px] leading-[0.8] select-none"
+                          style={{ color: 'transparent', WebkitTextStroke: '1.5px rgba(10, 139, 211, 0.22)' }}
+                        >
+                          {String(activeStep.id).padStart(2, '0')}
+                        </span>
+                      </div>
+
+                      <h3 className="mt-4 [@media(max-height:820px)]:mt-3 text-xl xl:text-2xl font-bold text-[#0B2545] font-display leading-tight">
+                        {activeStep.title}
+                      </h3>
+                      <p className="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-[#0A8BD3]">
+                        {activeStep.shortDesc}
+                      </p>
+
+                      <p className="mt-4 [@media(max-height:820px)]:mt-3 text-[15px] [@media(max-height:820px)]:text-sm leading-relaxed text-slate-600">{activeStep.fullDesc}</p>
+
+                      <div className="mt-6 [@media(max-height:820px)]:mt-4">
+                        <div className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0B2545] mb-2">
+                          Key Engineering Milestones
+                        </div>
+                        <ul className="divide-y divide-[#0A8BD3]/10">
+                          {activeDeliverables.map((item, idx) => (
+                            <motion.li
+                              key={item}
+                              initial={{ opacity: 0, x: -8 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ duration: 0.35, delay: 0.12 + idx * 0.07, ease: EASE_OUT }}
+                              className="flex items-start gap-3 py-2.5 [@media(max-height:820px)]:py-2 text-sm text-slate-700 leading-snug"
+                            >
+                              <CheckCircle2 className="w-[18px] h-[18px] text-[#8DC63F] shrink-0 mt-px" />
+                              <span>{item}</span>
+                            </motion.li>
+                          ))}
+                        </ul>
+                      </div>
+                    </motion.div>
+                  </AnimatePresence>
+
+                  {/* Footer: what comes next */}
+                  <div className="mt-6 [@media(max-height:820px)]:mt-4 pt-4 [@media(max-height:820px)]:pt-3 border-t border-[#0A8BD3]/10 flex items-center justify-between gap-3 text-xs">
+                    {nextStep ? (
+                      <>
+                        <span className="text-slate-500 truncate">
+                          <span className="font-semibold uppercase tracking-wider text-slate-400 mr-1.5">Next</span>
+                          <span className="font-semibold text-[#0B2545]">{nextStep.title}</span>
+                        </span>
+                        <span className="flex items-center gap-1.5 text-[#0A8BD3] font-semibold whitespace-nowrap">
+                          <ChevronsDown className="w-4 h-4 motion-safe:animate-bounce" />
+                          Scroll
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="flex items-center gap-1.5 font-semibold text-[#0B2545]">
+                          <BadgeCheck className="w-4 h-4 text-[#8DC63F]" />
+                          Turnkey handover complete
+                        </span>
+                        <span className="flex items-center gap-1 text-[#0A8BD3] font-semibold whitespace-nowrap">
+                          Continue
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </span>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
