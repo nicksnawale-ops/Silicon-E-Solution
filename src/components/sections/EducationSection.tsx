@@ -23,7 +23,7 @@ export const EducationSection: React.FC = () => {
         </div>
 
         {/* Academic Auditorium Banner with Video Wall Showcase */}
-        <div className="relative rounded-3xl overflow-hidden shadow-xl border border-[#0A8BD3]/20 bg-slate-900 mb-14">
+        <div className="relative h-[320px] sm:h-[400px] rounded-3xl overflow-hidden shadow-xl border border-[#0A8BD3]/20 bg-gradient-to-br from-[#0B2545] to-[#0E3A66] mb-14">
           <img
             src="https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=1200&q=80"
             alt="Auditorium Lecture Hall AV Installation"

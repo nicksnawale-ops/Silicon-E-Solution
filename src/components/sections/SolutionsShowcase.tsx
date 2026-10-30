@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CheckCircle2, ChevronRight, Layers, Sparkles } from 'lucide-react';
 import { SHOWCASE_ITEMS } from '../../data/content';
-import { ServiceAnimation } from '../ui/ServiceAnimation';
+import { ServiceVisual } from '../ui/ServiceVisual';
 
 export const SolutionsShowcase: React.FC = () => {
   const [activeId, setActiveId] = useState<string>(SHOWCASE_ITEMS[0].id);
@@ -93,7 +93,7 @@ export const SolutionsShowcase: React.FC = () => {
                   <div className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
                     Active System Diagram Simulation
                   </div>
-                  <ServiceAnimation serviceId={activeItem.id} isHovered={true} className="h-28" />
+                  <ServiceVisual serviceId={activeItem.id} className="h-36 rounded-2xl" />
                 </div>
 
                 {/* Key Architectural Bullets */}
@@ -151,7 +151,7 @@ export const SolutionsShowcase: React.FC = () => {
                   </p>
                 </div>
 
-                <ServiceAnimation serviceId={item.id} className="h-24" />
+                <ServiceVisual serviceId={item.id} className="h-32 rounded-2xl" />
 
                 <div className="space-y-2">
                   {item.bullets.map((bullet, idx) => (

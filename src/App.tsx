@@ -25,12 +25,17 @@ import { FloatingActions } from './components/ui/FloatingActions';
 import { ServiceModal } from './components/ui/ServiceModal';
 import { QuoteModal } from './components/ui/QuoteModal';
 import { ServiceItem } from './types';
+import { ServicesPage } from './pages/ServicesPage';
+import { usePathname, navigate, scrollToHash } from './lib/router';
+import { lenisRef } from './lib/lenis';
 
 export default function App() {
   const [selectedService, setSelectedService] = useState<ServiceItem | null>(null);
   const [isQuoteOpen, setIsQuoteOpen] = useState<boolean>(false);
   const [quoteServicePrefill, setQuoteServicePrefill] = useState<string>('');
   const [activeSection, setActiveSection] = useState<string>('home');
+  const pathname = usePathname();
+  const isServicesPage = pathname.replace(/\/+$/, '') === '/services';
 
   // Lenis Smooth Inertial Scroll (Desktop Mouse Only, disabled on < 1024px and touch devices)
   useEffect(() => {
@@ -48,6 +53,7 @@ export default function App() {
         if (lenis) {
           lenis.destroy();
           lenis = null;
+          lenisRef.current = null;
         }
         if (rafId) {
           cancelAnimationFrame(rafId);
@@ -62,6 +68,7 @@ export default function App() {
             duration: 1.1,
             easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
           });
+          lenisRef.current = lenis;
 
           const raf = (time: number) => {
             lenis?.raf(time);
@@ -87,6 +94,7 @@ export default function App() {
       window.removeEventListener('resize', handleResize);
       if (rafId) cancelAnimationFrame(rafId);
       lenis?.destroy();
+      lenisRef.current = null;
     };
   }, []);
 
@@ -106,6 +114,7 @@ export default function App() {
     ];
 
     const handleScroll = () => {
+      if (window.location.pathname.replace(/\/+$/, '') === '/services') return;
       const scrollPos = window.scrollY + 250;
       for (const id of sectionIds) {
         const el = document.getElementById(id);
@@ -123,6 +132,31 @@ export default function App() {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Page changes: jump to the top, or to the requested section ("/#contact").
+  useEffect(() => {
+    const { hash } = window.location;
+    if (hash) {
+      scrollToHash(hash);
+    } else {
+      lenisRef.current?.scrollTo(0, { immediate: true });
+      window.scrollTo(0, 0);
+    }
+    if (isServicesPage) setActiveSection('services');
+  }, [pathname, isServicesPage]);
+
+  // On sub-pages, in-page "#section" links (footer, CTAs) go back to the home page section.
+  useEffect(() => {
+    if (!isServicesPage) return;
+    const onClick = (e: MouseEvent) => {
+      const a = (e.target as HTMLElement)?.closest?.('a[href^="#"]') as HTMLAnchorElement | null;
+      if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey) return;
+      e.preventDefault();
+      navigate('/' + a.getAttribute('href'));
+    };
+    document.addEventListener('click', onClick);
+    return () => document.removeEventListener('click', onClick);
+  }, [isServicesPage]);
 
   const handleOpenQuoteWithService = (serviceTitle: string) => {
     setQuoteServicePrefill(serviceTitle);
@@ -146,59 +180,71 @@ export default function App() {
 
       {/* Main Content Flow */}
       <main>
-        {/* Hero Section */}
-        <Hero
-          onOpenQuote={() => {
-            setQuoteServicePrefill('');
-            setIsQuoteOpen(true);
-          }}
-        />
+        {isServicesPage ? (
+          <ServicesPage
+            onSelectService={(service) => setSelectedService(service)}
+            onOpenQuote={() => {
+              setQuoteServicePrefill('');
+              setIsQuoteOpen(true);
+            }}
+          />
+        ) : (
+          <>
+            {/* Hero Section */}
+            <Hero
+              onOpenQuote={() => {
+                setQuoteServicePrefill('');
+                setIsQuoteOpen(true);
+              }}
+            />
 
-        {/* Stats & Trust Marquee */}
-        <StatsAndMarquee />
+            {/* Stats & Trust Marquee */}
+            <StatsAndMarquee />
 
-        {/* About Silicon é Solution */}
-        <AboutUs
-          onOpenQuote={() => {
-            setQuoteServicePrefill('');
-            setIsQuoteOpen(true);
-          }}
-        />
+            {/* About Silicon é Solution */}
+            <AboutUs
+              onOpenQuote={() => {
+                setQuoteServicePrefill('');
+                setIsQuoteOpen(true);
+              }}
+            />
 
-        {/* 7-Step Turnkey Approach Wheel */}
-        <ApproachWheel />
+            {/* 7-Step Turnkey Approach Wheel */}
+            <ApproachWheel />
 
-        {/* 15 Bento Services */}
-        <ServicesGrid onSelectService={(service) => setSelectedService(service)} />
+            {/* 15 Bento Services */}
+            <ServicesGrid onSelectService={(service) => setSelectedService(service)} />
 
-        {/* Healthcare & Medical College ELV */}
-        <HealthcareSection />
+            {/* Healthcare & Medical College ELV */}
+            <HealthcareSection />
 
-        {/* Campus & Medical College AV Solutions */}
-        <EducationSection />
+            {/* Campus & Medical College AV Solutions */}
+            <EducationSection />
 
-        {/* Granular Technical Specifications Showcase */}
-        <SolutionsShowcase />
+            {/* Granular Technical Specifications Showcase */}
+            <SolutionsShowcase />
 
-        {/* Why Choose Us */}
-        <WhyChooseUs />
+            {/* Why Choose Us */}
+            <WhyChooseUs />
 
-        {/* Clientele Portfolio */}
-        <ClientsSection />
+            {/* Clientele Portfolio */}
+            <ClientsSection />
 
-        {/* Leadership Team */}
-        <TeamSection />
+            {/* Leadership Team */}
+            <TeamSection />
 
-        {/* High Conversion CTA Band */}
-        <CtaBand
-          onOpenQuote={() => {
-            setQuoteServicePrefill('');
-            setIsQuoteOpen(true);
-          }}
-        />
+            {/* High Conversion CTA Band */}
+            <CtaBand
+              onOpenQuote={() => {
+                setQuoteServicePrefill('');
+                setIsQuoteOpen(true);
+              }}
+            />
 
-        {/* Contact & Bavdhan Map */}
-        <ContactSection />
+            {/* Contact & Bavdhan Map */}
+            <ContactSection />
+          </>
+        )}
       </main>
 
       {/* Footer */}
@@ -212,6 +258,7 @@ export default function App() {
         service={selectedService}
         onClose={() => setSelectedService(null)}
         onRequestConsultation={handleOpenQuoteWithService}
+        onNavigate={(service) => setSelectedService(service)}
       />
 
       {/* Consultation & Quote Modal */}
