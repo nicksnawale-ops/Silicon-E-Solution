@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { lenisRef } from '../../lib/lenis';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, CheckCircle2, Send, Phone, Mail, Building, MapPin } from 'lucide-react';
 import { SERVICES_LIST, COMPANY_INFO } from '../../data/content';
@@ -39,6 +40,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
     };
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      lenisRef.current?.stop();
       window.addEventListener('keydown', handleKeyDown);
     } else {
       document.body.style.overflow = '';
@@ -46,6 +48,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
     }
     return () => {
       document.body.style.overflow = '';
+      if (isOpen) lenisRef.current?.start();
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [isOpen, onClose]);
@@ -78,7 +81,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+        <div data-lenis-prevent className="fixed inset-0 z-[1200] flex items-center justify-center p-4 sm:p-6 overflow-y-auto overscroll-contain">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}

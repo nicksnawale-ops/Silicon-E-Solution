@@ -213,3 +213,68 @@ section, [id] {
     radial-gradient(40% 40% at 18% 45%, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0) 100%),
     linear-gradient(180deg, #E4EFF8 0%, #DDEAF6 40%, #D8E7F4 100%);
 }
+
+/* ------------------------------------------------------------------ */
+/* Service visuals: dark "display" stage + lightweight SVG animations  */
+/* Transform/opacity driven; paused when off-screen (data-paused) and  */
+/* disabled for reduced-motion users.                                  */
+/* ------------------------------------------------------------------ */
+.sv-stage {
+  background:
+    radial-gradient(120% 110% at 50% -10%, #154A7E 0%, #0D2E52 45%, #081B33 100%);
+}
+.sv-stage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(79, 195, 247, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79, 195, 247, 0.08) 1px, transparent 1px);
+  background-size: 22px 22px;
+  -webkit-mask-image: radial-gradient(ellipse 80% 75% at 50% 45%, #000 30%, transparent 85%);
+  mask-image: radial-gradient(ellipse 80% 75% at 50% 45%, #000 30%, transparent 85%);
+  pointer-events: none;
+}
+.sv-stage svg * { transform-box: fill-box; transform-origin: center; }
+.sv-stage[data-paused='true'] *,
+.sv-stage[data-paused='true'] *::before { animation-play-state: paused !important; }
+
+@keyframes sv-pulse { 0% { transform: scale(0.6); opacity: 0.9; } 100% { transform: scale(2.4); opacity: 0; } }
+@keyframes sv-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+@keyframes sv-seq { 0%, 100% { opacity: 0.12; } 18%, 55% { opacity: 1; } }
+@keyframes sv-move {
+  0% { transform: translate(var(--x1), var(--y1)); opacity: 0; }
+  12%, 88% { opacity: 1; }
+  100% { transform: translate(var(--x2), var(--y2)); opacity: 0; }
+}
+@keyframes sv-hit {
+  0% { transform: translate(var(--x1), var(--y1)) scale(1); opacity: 0; }
+  10% { opacity: 1; }
+  78% { transform: translate(var(--x2), var(--y2)) scale(1); opacity: 1; }
+  100% { transform: translate(var(--x2), var(--y2)) scale(2.6); opacity: 0; }
+}
+@keyframes sv-dash { to { stroke-dashoffset: var(--dash, -32); } }
+@keyframes sv-sweep { from { transform: rotate(-16deg); } to { transform: rotate(16deg); } }
+@keyframes sv-bar { from { transform: scaleY(0.25); } to { transform: scaleY(1); } }
+@keyframes sv-fill { 0% { transform: scaleX(0.12); } 65%, 100% { transform: scaleX(1); } }
+@keyframes sv-spin { to { transform: rotate(360deg); } }
+@keyframes sv-slide { from { transform: translateX(0); } to { transform: translateX(var(--dx, 40px)); } }
+@keyframes sv-wipe { 0% { transform: translateX(-120%); } 60%, 100% { transform: translateX(120%); } }
+
+.sv-pulse { animation: sv-pulse var(--d, 2.4s) ease-out infinite; animation-delay: var(--delay, 0s); }
+.sv-blink { animation: sv-blink var(--d, 1.6s) ease-in-out infinite; animation-delay: var(--delay, 0s); }
+.sv-seq { animation: sv-seq var(--d, 3.2s) ease-in-out infinite; animation-delay: var(--delay, 0s); }
+.sv-move { animation: sv-move var(--d, 2.4s) linear infinite; animation-delay: var(--delay, 0s); opacity: 0; }
+.sv-hit { animation: sv-hit var(--d, 2.4s) ease-in infinite; animation-delay: var(--delay, 0s); opacity: 0; }
+.sv-dash { animation: sv-dash var(--d, 1.2s) linear infinite; }
+.sv-sweep { animation: sv-sweep 3.6s ease-in-out infinite alternate; transform-box: view-box !important; transform-origin: var(--ox) var(--oy) !important; }
+.sv-bar { animation: sv-bar var(--d, 0.9s) ease-in-out infinite alternate; animation-delay: var(--delay, 0s); }
+.sv-fill { animation: sv-fill 3.4s cubic-bezier(0.22, 1, 0.36, 1) infinite; transform-origin: left center !important; }
+.sv-spin { animation: sv-spin var(--d, 2.4s) linear infinite; }
+.sv-slide { animation: sv-slide var(--d, 2.6s) ease-in-out infinite alternate; }
+.sv-wipe { animation: sv-wipe var(--d, 3.6s) ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sv-stage * { animation: none !important; }
+  .sv-move, .sv-hit { opacity: 0 !important; }
+}

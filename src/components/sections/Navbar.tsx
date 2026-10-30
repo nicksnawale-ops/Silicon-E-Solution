@@ -36,6 +36,7 @@ import {
 } from 'lucide-react';
 import { SERVICES_LIST } from '../../data/content';
 import { ServiceItem } from '../../types';
+import { navigate, usePathname } from '../../lib/router';
 
 interface NavbarProps {
   onOpenQuote: () => void;
@@ -269,15 +270,25 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenQuote, activeSection, onSe
     setOpenMenu(null);
     setMobileMenuOpen(false);
     onSelectService?.(service);
-    document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  /** "#section" links scroll on the home page; from other pages they navigate home first. */
   const handleNavClick = (href: string) => {
     setOpenMenu(null);
     setMobileMenuOpen(false);
+    if (href.startsWith('/')) {
+      navigate(href);
+      return;
+    }
+    if (!isHome) {
+      navigate('/' + href);
+      return;
+    }
     document.getElementById(href.replace('#', ''))?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const pathname = usePathname();
+  const isHome = pathname === '/' || pathname === '';
   const activeTab = sectionToTab(activeSection);
   const pillTab = hoveredTab ?? activeTab;
 
@@ -385,7 +396,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenQuote, activeSection, onSe
               e.preventDefault();
               setOpenMenu(null);
               setMobileMenuOpen(false);
-              window.scrollTo({ top: 0, behavior: 'smooth' });
+              if (isHome) window.scrollTo({ top: 0, behavior: 'smooth' });
+              else navigate('/');
             }}
             className="group/logo flex items-center shrink-0 cursor-pointer rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0A8BD3]"
             aria-label="Silicon é Solution - Back to top"
@@ -734,6 +746,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenQuote, activeSection, onSe
                         {service.title}
                       </button>
                     ))}
+                    <button
+                      type="button"
+                      onClick={() => handleNavClick('/services')}
+                      className="mt-1 inline-flex items-center gap-1.5 py-1 text-left text-sm font-semibold text-[#0A8BD3]"
+                    >
+                      View all services
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 )}
               </div>
@@ -902,10 +922,10 @@ const ServicesMenu: React.FC<{
         </button>
         <button
           type="button"
-          onClick={() => onNav('#services')}
+          onClick={() => onNav('/services')}
           className="w-full py-1.5 text-[11px] font-semibold text-white/80 hover:text-white transition-colors cursor-pointer flex items-center justify-center gap-1"
         >
-          View all 15 services
+          View all {SERVICES_LIST.length} services
           <ArrowRight className="w-3 h-3" />
         </button>
       </div>
