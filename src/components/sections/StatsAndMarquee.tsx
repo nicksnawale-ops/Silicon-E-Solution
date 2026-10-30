@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion, useInView } from 'motion/react';
-import { HeartPulse, GraduationCap, Building2 } from 'lucide-react';
+import { HeartPulse, GraduationCap, Building2, MapPin } from 'lucide-react';
 import { STATS, CLIENTS_LIST } from '../../data/content';
 import { HorizonEdge } from '../ui/HorizonEdge';
 
@@ -142,18 +142,18 @@ export const StatsAndMarquee: React.FC = () => {
 
         {/* Full-width seamless marquee; edges fade via mask (no overlay on the cards) */}
         <div
-          className="group/marquee relative mt-7 overflow-hidden py-4"
+          className="group/marquee relative mt-5 overflow-hidden py-8"
           style={{
             maskImage: 'linear-gradient(to right, transparent 0, #000 9%, #000 91%, transparent 100%)',
             WebkitMaskImage: 'linear-gradient(to right, transparent 0, #000 9%, #000 91%, transparent 100%)',
           }}
         >
-          <div className="flex w-max animate-[client-marquee_42s_linear_infinite] group-hover/marquee:[animation-play-state:paused] motion-reduce:animate-none">
+          <div className="flex w-max animate-[client-marquee_48s_linear_infinite] group-hover/marquee:[animation-play-state:paused] motion-reduce:animate-none">
             {[0, 1].map((copy) => (
               <ul
                 key={copy}
                 aria-hidden={copy === 1 ? true : undefined}
-                className="flex shrink-0 items-stretch gap-5 pr-5"
+                className="flex shrink-0 items-stretch gap-6 pr-6"
               >
                 {CLIENTS_LIST.map((client) => {
                   const kind = sectorKind(client.sector, client.name);
@@ -162,28 +162,54 @@ export const StatsAndMarquee: React.FC = () => {
                   return (
                     <li
                       key={`${copy}-${client.name}`}
-                      className="group/client relative flex items-center gap-3.5 pl-3 pr-6 py-3 rounded-2xl bg-white border border-[#0A8BD3]/12 shadow-[0_8px_24px_-16px_rgba(11,37,69,0.28)] transition-[transform,box-shadow,border-color] duration-300 ease-out hover:-translate-y-1 hover:border-[#0A8BD3]/35 hover:shadow-[0_18px_36px_-18px_rgba(10,139,211,0.45)]"
+                      title={client.name}
+                      className="group/client relative w-[264px] sm:w-[300px] shrink-0 rounded-[22px] bg-white overflow-hidden transition-[transform,box-shadow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1.5 shadow-[0_1px_2px_rgba(11,37,69,0.05),0_14px_34px_-20px_rgba(11,37,69,0.35),0_0_0_1px_rgba(10,139,211,0.10)] hover:shadow-[0_2px_4px_rgba(11,37,69,0.05),0_26px_50px_-22px_rgba(10,139,211,0.45),0_0_0_1px_rgba(10,139,211,0.28)]"
                     >
-                      {/* Sector-coded monogram */}
+                      {/* Sector-coloured accent that sweeps in on hover */}
                       <span
-                        className="relative w-11 h-11 rounded-xl flex items-center justify-center shrink-0 text-white font-display font-bold text-[13px] tracking-wide overflow-hidden"
+                        aria-hidden="true"
+                        className="absolute inset-x-0 top-0 h-[3px] origin-left scale-x-[0.18] group-hover/client:scale-x-100 transition-transform duration-500 ease-out"
                         style={{ background: theme.gradient }}
-                      >
-                        <span className="absolute inset-0 bg-gradient-to-b from-white/25 to-transparent" aria-hidden="true" />
-                        <span className="relative">{monogram(client.logoText)}</span>
-                      </span>
+                      />
 
-                      <span className="min-w-0 text-left">
-                        <span className="block whitespace-nowrap font-display text-[14px] font-semibold text-[#0B2545] group-hover/client:text-[#0A8BD3] transition-colors">
+                      {/* Logo stage */}
+                      <div className="relative h-[112px] sm:h-[124px] px-6 flex items-center justify-center bg-[radial-gradient(120%_90%_at_50%_0%,#F4F9FD_0%,#FFFFFF_70%)]">
+                        {client.logo ? (
+                          <img
+                            src={client.logo}
+                            alt={`${client.name} logo`}
+                            decoding="async"
+                            draggable={false}
+                            className={`max-w-full object-contain select-none transition-transform duration-500 ease-out group-hover/client:scale-[1.04] ${
+                              client.logo.includes('kimsdu') ? 'max-h-[72px] sm:max-h-[80px] rounded-md' : 'max-h-[56px] sm:max-h-[64px]'
+                            }`}
+                          />
+                        ) : (
+                          <span
+                            className="w-14 h-14 rounded-2xl flex items-center justify-center text-white font-display font-bold text-base"
+                            style={{ background: theme.gradient }}
+                          >
+                            {monogram(client.logoText)}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Caption */}
+                      <div className="relative px-5 pt-3.5 pb-4 border-t border-[#0A8BD3]/10">
+                        <span className="block line-clamp-2 min-h-[2.5em] leading-[1.25] font-display text-[13.5px] font-semibold text-[#0B2545] group-hover/client:text-[#0A8BD3] transition-colors">
                           {client.name}
                         </span>
-                        <span className="mt-0.5 flex items-center gap-1.5 whitespace-nowrap text-[11px] font-medium text-slate-500">
-                          <Icon className="w-3 h-3 shrink-0" style={{ color: theme.accent }} aria-hidden="true" />
-                          <span>{client.sector}</span>
-                          <span className="text-slate-300" aria-hidden="true">•</span>
-                          <span>{client.location}</span>
+                        <span className="mt-1.5 flex items-center justify-between gap-2 text-[11px] font-medium text-slate-500">
+                          <span className="inline-flex items-center gap-1.5 min-w-0">
+                            <Icon className="w-3.5 h-3.5 shrink-0" style={{ color: theme.accent }} aria-hidden="true" />
+                            <span className="truncate">{client.sector}</span>
+                          </span>
+                          <span className="inline-flex items-center gap-1 shrink-0 text-slate-400">
+                            <MapPin className="w-3 h-3" aria-hidden="true" />
+                            {client.location.split(',')[0]}
+                          </span>
                         </span>
-                      </span>
+                      </div>
                     </li>
                   );
                 })}

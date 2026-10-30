@@ -643,6 +643,7 @@ export const CLIENTS_LIST: ClientItem[] = [
     description:
       'Turnkey ELV execution comprising campus-wide passive cabling, IP CCTV surveillance, nurse call systems, and integrated AV auditorium.',
     logoText: 'SYMBIOSIS HOSPITAL',
+    logo: '/assets/clients/symbiosis-hospital.webp',
   },
   {
     name: 'Krishna Institute of Medical Sciences (KIMSDU)',
@@ -651,6 +652,7 @@ export const CLIENTS_LIST: ClientItem[] = [
     description:
       'Comprehensive medical college AV deployment, lecture capture halls, anatomy dissection camera feeds, and campus fiber backbone.',
     logoText: 'KRISHNA INSTITUTE',
+    logo: '/assets/clients/kimsdu.webp',
   },
   {
     name: 'Yashodhara Super Speciality Hospital',
@@ -659,6 +661,7 @@ export const CLIENTS_LIST: ClientItem[] = [
     description:
       'Integrated BMS, Fire Alarm & Public Address system, Operation Theatre streaming, and high-reliability hospital Wi-Fi.',
     logoText: 'YASHODHARA HOSPITAL',
+    logo: '/assets/clients/yashodhara.webp',
   },
   {
     name: 'Anibrain Studio',
@@ -667,6 +670,7 @@ export const CLIENTS_LIST: ClientItem[] = [
     description:
       'Ultra-high-throughput 10G/40G networking fabric, enterprise storage SAN, and perimeter access control for global VFX production.',
     logoText: 'ANIBRAIN',
+    logo: '/assets/clients/anibrain.webp',
   },
   {
     name: 'Symbiosis International (Deemed University)',
@@ -675,6 +679,7 @@ export const CLIENTS_LIST: ClientItem[] = [
     description:
       'Multi-campus wireless hotspot coverage, boardroom video conferencing systems, and high-density seminar hall audio.',
     logoText: 'SYMBIOSIS INTERNATIONAL',
+    logo: '/assets/clients/symbiosis-international.webp',
   },
 ];
 

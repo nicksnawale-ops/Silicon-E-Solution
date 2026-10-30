@@ -37,6 +37,8 @@ export interface ClientItem {
   location: string;
   description: string;
   logoText: string;
+  /** Official client logo (from the company profile brochure). */
+  logo?: string;
 }
 
 export interface HealthcareSolution {
