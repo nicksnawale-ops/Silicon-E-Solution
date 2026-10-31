@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Building2, MapPin, ExternalLink, ShieldCheck } from 'lucide-react';
+import { ClientLogo } from '../ui/ClientLogo';
 import { CLIENTS_LIST } from '../../data/content';
 
 export const ClientsSection: React.FC = () => {
@@ -32,13 +33,13 @@ export const ClientsSection: React.FC = () => {
               className="glass-card p-6 rounded-3xl border border-[#0A8BD3]/15 shadow-xs hover:border-[#0A8BD3]/35 hover:shadow-lg transition-all text-left flex flex-col justify-between group"
             >
               <div>
-                {/* Logo typography badge  */}
-                <div className="h-14 flex items-center justify-start border-b border-slate-100 pb-3 mb-4">
-                  <div className="px-3.5 py-1.5 rounded-xl bg-[#F6FAFD] border border-[#0A8BD3]/15 group-hover:bg-[#E8F6FD] transition-colors">
-                    <span className="text-xs font-black font-display tracking-wider text-[#0B2545] group-hover:text-[#0866A8]">
-                      {client.logoText}
-                    </span>
-                  </div>
+                {/* Official logo (falls back to the wordmark text) */}
+                <div className="h-24 flex items-center justify-center rounded-2xl bg-white ring-1 ring-[#0A8BD3]/10 px-4 mb-5 transition-shadow group-hover:shadow-[0_12px_30px_-18px_rgba(10,139,211,0.45)]">
+                  {client.logo ? (
+                    <ClientLogo client={client} size="sm" className="transition-transform duration-500 group-hover:scale-[1.04]" />
+                  ) : (
+                    <span className="text-xs font-black font-display tracking-wider text-[#0B2545]">{client.logoText}</span>
+                  )}
                 </div>
 
                 <div className="flex items-center gap-2 text-[11px] font-semibold text-[#0A8BD3] uppercase tracking-wider mb-1">
