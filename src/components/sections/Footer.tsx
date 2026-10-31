@@ -98,7 +98,7 @@ export const Footer: React.FC = () => {
                 <a href="/industries#education" className="hover:text-[#0A8BD3] transition-colors">Campus AV</a>
               </li>
               <li>
-                <a href="#solutions" className="hover:text-[#0A8BD3] transition-colors">Technical Specs</a>
+                <a href="/solutions" className="hover:text-[#0A8BD3] transition-colors">Solutions</a>
               </li>
               <li>
                 <a href="#team" className="hover:text-[#0A8BD3] transition-colors">Leadership</a>

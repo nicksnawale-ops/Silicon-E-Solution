@@ -86,7 +86,7 @@ const TABS: { key: TabKey; label: string; href?: string; dropdown?: boolean }[] 
   { key: 'approach', label: 'Approach', href: '#approach' },
   { key: 'services', label: 'Services', dropdown: true },
   { key: 'industries', label: 'Industries', dropdown: true },
-  { key: 'solutions', label: 'Solutions', href: '#solutions' },
+  { key: 'solutions', label: 'Solutions', href: '/solutions' },
   { key: 'contact', label: 'Contact', href: '#contact' },
 ];
 
@@ -800,7 +800,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenQuote, activeSection, onSe
 
               <button
                 type="button"
-                onClick={() => handleNavClick('#solutions')}
+                onClick={() => handleNavClick('/solutions')}
                 className={`w-full py-[14px] text-lg font-bold font-display text-left transition-colors cursor-pointer ${
                   isSolutionsActive ? 'text-[#0A8BD3]' : 'text-[#0B2545]'
                 }`}

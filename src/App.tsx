@@ -12,7 +12,7 @@ import { AboutUs } from './components/sections/AboutUs';
 import { ApproachWheel } from './components/sections/ApproachWheel';
 import { ServicesGrid } from './components/sections/ServicesGrid';
 import { IndustriesTeaser } from './components/sections/IndustriesTeaser';
-import { SolutionsShowcase } from './components/sections/SolutionsShowcase';
+import { SolutionsTeaser } from './components/sections/SolutionsTeaser';
 import { WhyChooseUs } from './components/sections/WhyChooseUs';
 import { ClientsSection } from './components/sections/ClientsSection';
 import { TeamSection } from './components/sections/TeamSection';
@@ -27,6 +27,7 @@ import { ServiceItem } from './types';
 import { ServicesPage } from './pages/ServicesPage';
 import { AboutPage } from './pages/AboutPage';
 import { IndustriesPage } from './pages/IndustriesPage';
+import { SolutionsPage } from './pages/SolutionsPage';
 import { usePathname, navigate, scrollToHash } from './lib/router';
 import { lenisRef } from './lib/lenis';
 
@@ -40,7 +41,8 @@ export default function App() {
   const isServicesPage = route === '/services';
   const isAboutPage = route === '/about';
   const isIndustriesPage = route === '/industries';
-  const isSubPage = isServicesPage || isAboutPage || isIndustriesPage;
+  const isSolutionsPage = route === '/solutions';
+  const isSubPage = isServicesPage || isAboutPage || isIndustriesPage || isSolutionsPage;
 
   // Lenis Smooth Inertial Scroll (Desktop Mouse Only, disabled on < 1024px and touch devices)
   useEffect(() => {
@@ -149,7 +151,8 @@ export default function App() {
     if (isServicesPage) setActiveSection('services');
     if (isAboutPage) setActiveSection('about');
     if (isIndustriesPage) setActiveSection('industries');
-  }, [pathname, isServicesPage, isAboutPage, isIndustriesPage]);
+    if (isSolutionsPage) setActiveSection('solutions');
+  }, [pathname, isServicesPage, isAboutPage, isIndustriesPage, isSolutionsPage]);
 
   // Internal page links (<a href="/about">, "/services", "/#contact") navigate without a full reload.
   useEffect(() => {
@@ -200,7 +203,15 @@ export default function App() {
 
       {/* Main Content Flow */}
       <main>
-        {isIndustriesPage ? (
+        {isSolutionsPage ? (
+          <SolutionsPage
+            onSelectService={(service) => setSelectedService(service)}
+            onOpenQuote={() => {
+              setQuoteServicePrefill('');
+              setIsQuoteOpen(true);
+            }}
+          />
+        ) : isIndustriesPage ? (
           <IndustriesPage
             onSelectService={(service) => setSelectedService(service)}
             onOpenQuote={() => {
@@ -252,8 +263,8 @@ export default function App() {
             {/* Industries we serve (full detail on /industries) */}
             <IndustriesTeaser />
 
-            {/* Granular Technical Specifications Showcase */}
-            <SolutionsShowcase />
+            {/* Solution architectures (full detail on /solutions) */}
+            <SolutionsTeaser />
 
             {/* Why Choose Us */}
             <WhyChooseUs />
