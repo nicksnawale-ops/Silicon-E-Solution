@@ -1,12 +1,5 @@
-import React, { useState, useRef } from 'react';
-import {
-  motion,
-  AnimatePresence,
-  useScroll,
-  useTransform,
-  useMotionValueEvent,
-  MotionValue,
-} from 'motion/react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence, useInView, useMotionValue, animate, MotionValue } from 'motion/react';
 import {
   Lightbulb,
   ClipboardCheck,
@@ -18,7 +11,7 @@ import {
   Layers,
   ArrowRight,
   CheckCircle2,
-  ChevronsDown,
+  RotateCcw,
   BadgeCheck,
 } from 'lucide-react';
 import { APPROACH_STEPS } from '../../data/content';
@@ -36,18 +29,9 @@ const iconMap: Record<string, React.ElementType> = {
 };
 
 const STEP_COUNT = APPROACH_STEPS.length;
-/** Scroll distance (in viewport heights) spent on each phase while the section is pinned. */
-const VH_PER_STEP = 55;
-/** Fixed navbar height once scrolled; the pinned stage sits right under it. */
-const NAV_OFFSET = 64;
+/** Seconds each phase stays on screen before auto-advancing. */
+const PHASE_SECONDS = 6;
 const EASE_OUT: [number, number, number, number] = [0.22, 1, 0.36, 1];
-
-/** Maps overall pinned-scroll progress (0..1) to the active phase index and progress within it. */
-const phaseFromProgress = (v: number) => {
-  const x = Math.min(Math.max(v, 0), 1) * STEP_COUNT;
-  const index = Math.min(STEP_COUNT - 1, Math.floor(x));
-  return { index, within: Math.min(1, x - index) };
-};
 
 const PHASE_DELIVERABLES: Record<number, string[]> = {
   1: [
@@ -87,7 +71,7 @@ const PHASE_DELIVERABLES: Record<number, string[]> = {
   ],
 };
 
-/** 7-segment progress bar: finished phases full, current phase fills with scroll. */
+/** 7-segment progress bar: finished phases full, current phase fills over time. */
 const SegmentedProgress: React.FC<{ activeIndex: number; within: MotionValue<number> }> = ({
   activeIndex,
   within,
@@ -114,41 +98,59 @@ export const ApproachWheel: React.FC = () => {
   const prefersReduced = useReducedMotion();
   const [activeIndex, setActiveIndex] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(stageRef, { amount: 0.35 });
+  const [paused, setPaused] = useState(false);
 
-  // Progress runs 0→1 across the pinned range: from the section reaching the
-  // navbar until its bottom reaches the bottom of the viewport.
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: [`start ${NAV_OFFSET}px`, 'end end'],
-  });
-  const withinPhase = useTransform(scrollYProgress, (v) => phaseFromProgress(v).within);
+  // Progress of the current phase (0→1) and of the whole ring (0→1).
+  const withinPhase = useMotionValue(0);
+  const ringProgress = useMotionValue(1 / STEP_COUNT);
+  const indexRef = useRef(0);
+  indexRef.current = activeIndex;
 
-  useMotionValueEvent(scrollYProgress, 'change', (v) => {
-    const { index } = phaseFromProgress(v);
-    setActiveIndex((prev) => (prev === index ? prev : index));
-  });
+  useEffect(
+    () => withinPhase.on('change', (v) => ringProgress.set((indexRef.current + v) / STEP_COUNT)),
+    [withinPhase, ringProgress]
+  );
+
+  const goTo = useCallback(
+    (index: number) => {
+      const next = (index + STEP_COUNT) % STEP_COUNT;
+      withinPhase.set(0);
+      ringProgress.set(next / STEP_COUNT);
+      setActiveIndex(next);
+    },
+    [withinPhase, ringProgress]
+  );
+
+  // Auto-advance while visible; pauses on hover/focus, when off-screen or the tab is hidden.
+  useEffect(() => {
+    if (!isDesktop) return;
+    if (prefersReduced) {
+      withinPhase.set(1);
+      return;
+    }
+    if (!inView || paused) return;
+    const remaining = 1 - withinPhase.get();
+    const controls = animate(withinPhase, 1, {
+      duration: PHASE_SECONDS * remaining,
+      ease: 'linear',
+      onComplete: () => {
+        if (!document.hidden) goTo(indexRef.current + 1);
+      },
+    });
+    return () => controls.stop();
+  }, [isDesktop, prefersReduced, inView, paused, activeIndex, withinPhase, goTo]);
 
   const activeStep = APPROACH_STEPS[activeIndex];
   const activeDeliverables = PHASE_DELIVERABLES[activeStep.id] || [];
   const nextStep = APPROACH_STEPS[activeIndex + 1];
   const ActiveIcon = iconMap[activeStep.iconName] || Layers;
 
-  /** Clicking a node scrolls to the middle of that phase's range, keeping scroll and state in sync. */
-  const scrollToPhase = (index: number) => {
-    const el = sectionRef.current;
-    if (!el) return;
-    const top = el.getBoundingClientRect().top + window.scrollY - NAV_OFFSET;
-    const range = el.offsetHeight - (window.innerHeight - NAV_OFFSET);
-    window.scrollTo({
-      top: top + ((index + 0.5) / STEP_COUNT) * range,
-      behavior: prefersReduced ? 'auto' : 'smooth',
-    });
-  };
-
   const ringRadius = 38;
 
   const header = (compact: boolean) => (
-    <div className={`max-w-3xl mx-auto text-center ${compact ? 'mb-5 xl:mb-7 [@media(max-height:820px)]:mb-4' : 'mb-10 sm:mb-12'}`}>
+    <div className={`max-w-3xl mx-auto text-center ${compact ? 'mb-5 xl:mb-7' : 'mb-10 sm:mb-12'}`}>
       <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#0A8BD3] mb-2">
         <span>Turnkey IT & AV Delivery</span>
       </div>
@@ -258,36 +260,35 @@ export const ApproachWheel: React.FC = () => {
   }
 
   // ================================================================
-  // DESKTOP (>= 1024px): pinned stage, phases advance with scroll
+  // DESKTOP (>= 1024px): normal-flow section; phases auto-advance
   // ================================================================
   return (
     <section
       id="approach"
       ref={sectionRef}
-      className="relative w-full max-w-full surface-ice surface-ice--dots"
-      style={{ height: `calc(${STEP_COUNT * VH_PER_STEP}vh + 100vh - ${NAV_OFFSET}px)` }}
+      className="relative w-full max-w-full overflow-x-clip py-20 lg:py-24 surface-ice surface-ice--dots"
       aria-label="Our approach: seven delivery phases"
     >
+      {/* Soft radial glow behind the wheel */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[58%] left-[30%] -translate-x-1/2 -translate-y-1/2 w-[640px] h-[640px] bg-[radial-gradient(circle,rgba(10,139,211,0.08)_0%,transparent_70%)]" />
+      </div>
+
       <div
-        className="sticky w-full overflow-hidden flex flex-col"
-        style={{ top: NAV_OFFSET, height: `calc(100vh - ${NAV_OFFSET}px)`, justifyContent: 'safe center' }}
+        ref={stageRef}
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+        onFocusCapture={() => setPaused(true)}
+        onBlurCapture={() => setPaused(false)}
+        className="relative z-10 max-w-[1320px] mx-auto px-8 w-full"
       >
-        {/* Soft radial glow behind the wheel */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/2 left-[32%] -translate-x-1/2 -translate-y-1/2 w-[640px] h-[640px] bg-[radial-gradient(circle,rgba(10,139,211,0.08)_0%,transparent_70%)]" />
-        </div>
+          {header(false)}
 
-        <div className="relative z-10 max-w-[1560px] mx-auto px-8 xl:px-12 w-full">
-          {header(true)}
-
-          {/* Wheel anchored left, card anchored right, generous gap between them */}
-          <div className="flex items-center justify-between gap-10 xl:gap-16">
+          {/* Two equal columns with a gap that scales with the screen width */}
+          <div className="grid grid-cols-2 items-center gap-[clamp(2.5rem,4.5vw,5rem)]">
             {/* ---------------- Left: radial wheel ---------------- */}
-            <div className="flex-1 min-w-0 flex justify-center xl:justify-start">
-              <div
-                className="relative aspect-square select-none"
-                style={{ width: 'min(600px, calc(100vh - 330px), 100%)', minWidth: 400 }}
-              >
+            <div className="min-w-0 flex justify-center">
+              <div className="relative aspect-square select-none w-full max-w-[540px] mx-6">
                 <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full pointer-events-none z-0">
                   <defs>
                     <linearGradient id="activeLineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -321,7 +322,7 @@ export const ApproachWheel: React.FC = () => {
                     strokeLinecap="round"
                     fill="none"
                     transform="rotate(-90 50 50)"
-                    style={{ pathLength: scrollYProgress }}
+                    style={{ pathLength: ringProgress }}
                   />
 
                   {APPROACH_STEPS.map((step, idx) => {
@@ -394,7 +395,7 @@ export const ApproachWheel: React.FC = () => {
                     >
                       <button
                         type="button"
-                        onClick={() => scrollToPhase(idx)}
+                        onClick={() => goTo(idx)}
                         aria-label={`Go to phase 0${step.id}: ${step.title}`}
                         aria-current={isSelected ? 'step' : undefined}
                         className={`group relative w-14 h-14 xl:w-16 xl:h-16 rounded-full flex items-center justify-center cursor-pointer transition-all duration-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#0A8BD3]/40 ${
@@ -430,7 +431,7 @@ export const ApproachWheel: React.FC = () => {
             </div>
 
             {/* ---------------- Right: premium phase card ---------------- */}
-            <div className="w-[44%] max-w-[600px] shrink-0">
+            <div className="min-w-0 w-full max-w-[600px] justify-self-center">
               <div
                 className="relative rounded-[28px] bg-white text-left overflow-hidden"
                 style={{
@@ -443,7 +444,7 @@ export const ApproachWheel: React.FC = () => {
                 {/* Soft corner light */}
                 <div className="pointer-events-none absolute -top-24 -right-24 w-72 h-72 rounded-full bg-[radial-gradient(closest-side,rgba(79,195,247,0.18),transparent)]" />
 
-                <div className="relative p-7 xl:p-9 [@media(max-height:820px)]:p-6">
+                <div className="relative p-7 xl:p-9">
                   {/* Progress */}
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#0A8BD3]">
@@ -466,7 +467,7 @@ export const ApproachWheel: React.FC = () => {
                       className="relative"
                     >
                       {/* Icon tile + large outlined phase number on one row, title below */}
-                      <div className="pt-6 [@media(max-height:820px)]:pt-4 flex items-end justify-between gap-4">
+                      <div className="pt-6 flex items-end justify-between gap-4">
                         <span className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#0A8BD3] to-[#4FC3F7] text-white flex items-center justify-center shrink-0 shadow-[0_10px_24px_-10px_rgba(10,139,211,0.7)]">
                           <ActiveIcon className="w-6 h-6" />
                         </span>
@@ -479,16 +480,16 @@ export const ApproachWheel: React.FC = () => {
                         </span>
                       </div>
 
-                      <h3 className="mt-4 [@media(max-height:820px)]:mt-3 text-xl xl:text-2xl font-bold text-[#0B2545] font-display leading-tight">
+                      <h3 className="mt-4 text-xl xl:text-2xl font-bold text-[#0B2545] font-display leading-tight">
                         {activeStep.title}
                       </h3>
                       <p className="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-[#0A8BD3]">
                         {activeStep.shortDesc}
                       </p>
 
-                      <p className="mt-4 [@media(max-height:820px)]:mt-3 text-[15px] [@media(max-height:820px)]:text-sm leading-relaxed text-slate-600">{activeStep.fullDesc}</p>
+                      <p className="mt-4 text-[15px] leading-relaxed text-slate-600">{activeStep.fullDesc}</p>
 
-                      <div className="mt-6 [@media(max-height:820px)]:mt-4">
+                      <div className="mt-6">
                         <div className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0B2545] mb-2">
                           Key Engineering Milestones
                         </div>
@@ -499,7 +500,7 @@ export const ApproachWheel: React.FC = () => {
                               initial={{ opacity: 0, x: -8 }}
                               animate={{ opacity: 1, x: 0 }}
                               transition={{ duration: 0.35, delay: 0.12 + idx * 0.07, ease: EASE_OUT }}
-                              className="flex items-start gap-3 py-2.5 [@media(max-height:820px)]:py-2 text-sm text-slate-700 leading-snug"
+                              className="flex items-start gap-3 py-2.5 text-sm text-slate-700 leading-snug"
                             >
                               <CheckCircle2 className="w-[18px] h-[18px] text-[#8DC63F] shrink-0 mt-px" />
                               <span>{item}</span>
@@ -511,36 +512,42 @@ export const ApproachWheel: React.FC = () => {
                   </AnimatePresence>
 
                   {/* Footer: what comes next */}
-                  <div className="mt-6 [@media(max-height:820px)]:mt-4 pt-4 [@media(max-height:820px)]:pt-3 border-t border-[#0A8BD3]/10 flex items-center justify-between gap-3 text-xs">
+                  <div className="mt-6 pt-4 border-t border-[#0A8BD3]/10 flex items-center justify-between gap-3 text-xs">
                     {nextStep ? (
-                      <>
+                      <button
+                        type="button"
+                        onClick={() => goTo(activeIndex + 1)}
+                        className="group w-full flex items-center justify-between gap-3 text-left cursor-pointer"
+                      >
                         <span className="text-slate-500 truncate">
                           <span className="font-semibold uppercase tracking-wider text-slate-400 mr-1.5">Next</span>
-                          <span className="font-semibold text-[#0B2545]">{nextStep.title}</span>
+                          <span className="font-semibold text-[#0B2545] group-hover:text-[#0A8BD3] transition-colors">{nextStep.title}</span>
                         </span>
-                        <span className="flex items-center gap-1.5 text-[#0A8BD3] font-semibold whitespace-nowrap">
-                          <ChevronsDown className="w-4 h-4 motion-safe:animate-bounce" />
-                          Scroll
+                        <span className="w-8 h-8 rounded-full ring-1 ring-[#0A8BD3]/30 text-[#0A8BD3] flex items-center justify-center shrink-0 group-hover:bg-[#0A8BD3] group-hover:text-white transition-colors">
+                          <ArrowRight className="w-4 h-4" />
                         </span>
-                      </>
+                      </button>
                     ) : (
-                      <>
+                      <button
+                        type="button"
+                        onClick={() => goTo(0)}
+                        className="group w-full flex items-center justify-between gap-3 text-left cursor-pointer"
+                      >
                         <span className="flex items-center gap-1.5 font-semibold text-[#0B2545]">
                           <BadgeCheck className="w-4 h-4 text-[#8DC63F]" />
                           Turnkey handover complete
                         </span>
-                        <span className="flex items-center gap-1 text-[#0A8BD3] font-semibold whitespace-nowrap">
-                          Continue
-                          <ArrowRight className="w-3.5 h-3.5" />
+                        <span className="flex items-center gap-1.5 text-[#0A8BD3] font-semibold whitespace-nowrap">
+                          <RotateCcw className="w-3.5 h-3.5" />
+                          Start again
                         </span>
-                      </>
+                      </button>
                     )}
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
       </div>
     </section>
   );
