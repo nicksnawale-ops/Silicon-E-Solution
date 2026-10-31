@@ -3,6 +3,7 @@ import { motion, useInView } from 'motion/react';
 import { HeartPulse, GraduationCap, Building2, MapPin } from 'lucide-react';
 import { STATS, CLIENTS_LIST } from '../../data/content';
 import { HorizonEdge } from '../ui/HorizonEdge';
+import { ClientLogo } from '../ui/ClientLogo';
 
 /** Soft ice-blue surface shared with the About section below for a continuous band. */
 export const SURFACE_TOP = '#EDF5FB';
@@ -175,14 +176,9 @@ export const StatsAndMarquee: React.FC = () => {
                       {/* Logo stage */}
                       <div className="relative h-[112px] sm:h-[124px] px-6 flex items-center justify-center bg-[radial-gradient(120%_90%_at_50%_0%,#F4F9FD_0%,#FFFFFF_70%)]">
                         {client.logo ? (
-                          <img
-                            src={client.logo}
-                            alt={`${client.name} logo`}
-                            decoding="async"
-                            draggable={false}
-                            className={`max-w-full object-contain select-none transition-transform duration-500 ease-out group-hover/client:scale-[1.04] ${
-                              client.logo.includes('kimsdu') ? 'max-h-[72px] sm:max-h-[80px] rounded-md' : 'max-h-[56px] sm:max-h-[64px]'
-                            }`}
+                          <ClientLogo
+                            client={client}
+                            className="transition-transform duration-500 ease-out group-hover/client:scale-[1.04]"
                           />
                         ) : (
                           <span
