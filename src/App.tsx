@@ -11,8 +11,7 @@ import { StatsAndMarquee } from './components/sections/StatsAndMarquee';
 import { AboutUs } from './components/sections/AboutUs';
 import { ApproachWheel } from './components/sections/ApproachWheel';
 import { ServicesGrid } from './components/sections/ServicesGrid';
-import { HealthcareSection } from './components/sections/HealthcareSection';
-import { EducationSection } from './components/sections/EducationSection';
+import { IndustriesTeaser } from './components/sections/IndustriesTeaser';
 import { SolutionsShowcase } from './components/sections/SolutionsShowcase';
 import { WhyChooseUs } from './components/sections/WhyChooseUs';
 import { ClientsSection } from './components/sections/ClientsSection';
@@ -27,6 +26,7 @@ import { QuoteModal } from './components/ui/QuoteModal';
 import { ServiceItem } from './types';
 import { ServicesPage } from './pages/ServicesPage';
 import { AboutPage } from './pages/AboutPage';
+import { IndustriesPage } from './pages/IndustriesPage';
 import { usePathname, navigate, scrollToHash } from './lib/router';
 import { lenisRef } from './lib/lenis';
 
@@ -39,7 +39,8 @@ export default function App() {
   const route = pathname.replace(/\/+$/, '') || '/';
   const isServicesPage = route === '/services';
   const isAboutPage = route === '/about';
-  const isSubPage = isServicesPage || isAboutPage;
+  const isIndustriesPage = route === '/industries';
+  const isSubPage = isServicesPage || isAboutPage || isIndustriesPage;
 
   // Lenis Smooth Inertial Scroll (Desktop Mouse Only, disabled on < 1024px and touch devices)
   useEffect(() => {
@@ -109,8 +110,7 @@ export default function App() {
       'about',
       'approach',
       'services',
-      'healthcare',
-      'education',
+      'industries',
       'solutions',
       'clients',
       'team',
@@ -148,7 +148,8 @@ export default function App() {
     }
     if (isServicesPage) setActiveSection('services');
     if (isAboutPage) setActiveSection('about');
-  }, [pathname, isServicesPage, isAboutPage]);
+    if (isIndustriesPage) setActiveSection('industries');
+  }, [pathname, isServicesPage, isAboutPage, isIndustriesPage]);
 
   // Internal page links (<a href="/about">, "/services", "/#contact") navigate without a full reload.
   useEffect(() => {
@@ -199,7 +200,15 @@ export default function App() {
 
       {/* Main Content Flow */}
       <main>
-        {isAboutPage ? (
+        {isIndustriesPage ? (
+          <IndustriesPage
+            onSelectService={(service) => setSelectedService(service)}
+            onOpenQuote={() => {
+              setQuoteServicePrefill('');
+              setIsQuoteOpen(true);
+            }}
+          />
+        ) : isAboutPage ? (
           <AboutPage
             onOpenQuote={() => {
               setQuoteServicePrefill('');
@@ -240,12 +249,8 @@ export default function App() {
 
             {/* 15 Bento Services */}
             <ServicesGrid onSelectService={(service) => setSelectedService(service)} />
-
-            {/* Healthcare & Medical College ELV */}
-            <HealthcareSection />
-
-            {/* Campus & Medical College AV Solutions */}
-            <EducationSection />
+            {/* Industries we serve (full detail on /industries) */}
+            <IndustriesTeaser />
 
             {/* Granular Technical Specifications Showcase */}
             <SolutionsShowcase />

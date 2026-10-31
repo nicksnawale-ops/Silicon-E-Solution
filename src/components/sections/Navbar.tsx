@@ -95,6 +95,7 @@ const sectionToTab = (section: string): TabKey | null => {
   switch (section) {
     case 'services':
       return 'services';
+    case 'industries':
     case 'healthcare':
     case 'education':
       return 'industries';
@@ -778,10 +779,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenQuote, activeSection, onSe
                 {mobileIndustriesOpen && (
                   <div className="pl-3 pb-3 space-y-2 border-l-2 border-[#0A8BD3]/30 ml-2">
                     {[
-                      ['Healthcare & Hospitals', '#healthcare'],
-                      ['Medical Colleges & Education', '#education'],
-                      ['Government & Defence', '#solutions'],
-                      ['Commercial & Construction', '#solutions'],
+                      ['Healthcare & Hospitals', '/industries#healthcare'],
+                      ['Medical Colleges & Education', '/industries#education'],
+                      ['Government & Defence', '/industries#government'],
+                      ['Commercial & Construction', '/industries#commercial'],
+                      ['View all industries', '/industries'],
                     ].map(([label, href]) => (
                       <button
                         key={label}
@@ -935,7 +937,7 @@ const ServicesMenu: React.FC<{
 
 const INDUSTRY_CARDS = [
   {
-    href: '#healthcare',
+    href: '/industries#healthcare',
     title: 'Healthcare & Hospitals',
     tag: 'Critical Care',
     desc: 'ELV, OT integration, nurse calling & hospital Wi-Fi',
@@ -944,7 +946,7 @@ const INDUSTRY_CARDS = [
     tagColor: 'text-[#7DD3FC]',
   },
   {
-    href: '#education',
+    href: '/industries#education',
     title: 'Medical Colleges & Education',
     tag: 'Academic Campuses',
     desc: 'Auditoriums, lecture capture & smart classrooms',
@@ -1002,10 +1004,10 @@ const IndustriesMenu: React.FC<{ onNav: (href: string) => void }> = ({ onNav }) 
       <div className="flex items-center gap-4 text-slate-600">
         <span className="font-semibold text-[#0B2545]">Also serving:</span>
         <a
-          href="#solutions"
+          href="/industries#government"
           onClick={(e) => {
             e.preventDefault();
-            onNav('#solutions');
+            onNav('/industries#government');
           }}
           className="hover:text-[#0A8BD3] font-medium transition-colors flex items-center gap-1.5"
         >
@@ -1013,10 +1015,10 @@ const IndustriesMenu: React.FC<{ onNav: (href: string) => void }> = ({ onNav }) 
           Government
         </a>
         <a
-          href="#solutions"
+          href="/industries#commercial"
           onClick={(e) => {
             e.preventDefault();
-            onNav('#solutions');
+            onNav('/industries#commercial');
           }}
           className="hover:text-[#0A8BD3] font-medium transition-colors flex items-center gap-1.5"
         >
@@ -1025,14 +1027,14 @@ const IndustriesMenu: React.FC<{ onNav: (href: string) => void }> = ({ onNav }) 
         </a>
       </div>
       <a
-        href="#clients"
+        href="/industries"
         onClick={(e) => {
           e.preventDefault();
-          onNav('#clients');
+          onNav('/industries');
         }}
         className="text-[#0A8BD3] font-semibold hover:underline underline-offset-2 flex items-center gap-1 whitespace-nowrap"
       >
-        See our clients
+        All industries
         <ArrowRight className="w-3.5 h-3.5" />
       </a>
     </div>
