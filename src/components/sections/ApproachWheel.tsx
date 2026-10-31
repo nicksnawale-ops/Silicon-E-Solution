@@ -143,9 +143,7 @@ export const ApproachWheel: React.FC = () => {
   }, [isDesktop, prefersReduced, inView, paused, activeIndex, withinPhase, goTo]);
 
   const activeStep = APPROACH_STEPS[activeIndex];
-  const activeDeliverables = PHASE_DELIVERABLES[activeStep.id] || [];
   const nextStep = APPROACH_STEPS[activeIndex + 1];
-  const ActiveIcon = iconMap[activeStep.iconName] || Layers;
 
   const ringRadius = 38;
 
@@ -457,59 +455,64 @@ export const ApproachWheel: React.FC = () => {
                   </div>
                   <SegmentedProgress activeIndex={activeIndex} within={withinPhase} />
 
-                  <AnimatePresence mode="wait" initial={false}>
-                    <motion.div
-                      key={activeStep.id}
-                      initial={{ opacity: 0, y: 14, filter: 'blur(6px)' }}
-                      animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                      exit={{ opacity: 0, y: -10, filter: 'blur(4px)' }}
-                      transition={{ duration: 0.4, ease: EASE_OUT }}
-                      className="relative"
-                    >
-                      {/* Icon tile + large outlined phase number on one row, title below */}
-                      <div className="pt-6 flex items-end justify-between gap-4">
-                        <span className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#0A8BD3] to-[#4FC3F7] text-white flex items-center justify-center shrink-0 shadow-[0_10px_24px_-10px_rgba(10,139,211,0.7)]">
-                          <ActiveIcon className="w-6 h-6" />
-                        </span>
-                        <span
-                          aria-hidden="true"
-                          className="font-display font-extrabold text-[64px] xl:text-[72px] leading-[0.8] select-none"
-                          style={{ color: 'transparent', WebkitTextStroke: '1.5px rgba(10, 139, 211, 0.22)' }}
+                  {/* All seven phases share one grid cell, so the card is always as tall as the
+                      longest phase: no height jump when the phase changes, at any screen width. */}
+                  <div className="grid">
+                    {APPROACH_STEPS.map((step, i) => {
+                      const isActive = i === activeIndex;
+                      const StepIcon = iconMap[step.iconName] || Layers;
+                      return (
+                        <motion.div
+                          key={step.id}
+                          aria-hidden={!isActive}
+                          initial={false}
+                          animate={
+                            isActive
+                              ? { opacity: 1, y: 0, filter: 'blur(0px)' }
+                              : { opacity: 0, y: -8, filter: 'blur(4px)' }
+                          }
+                          transition={{ duration: isActive ? 0.45 : 0.25, delay: isActive ? 0.12 : 0, ease: EASE_OUT }}
+                          className={`relative [grid-area:1/1] ${isActive ? '' : 'pointer-events-none select-none'}`}
                         >
-                          {String(activeStep.id).padStart(2, '0')}
-                        </span>
-                      </div>
-
-                      <h3 className="mt-4 text-xl xl:text-2xl font-bold text-[#0B2545] font-display leading-tight">
-                        {activeStep.title}
-                      </h3>
-                      <p className="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-[#0A8BD3]">
-                        {activeStep.shortDesc}
-                      </p>
-
-                      <p className="mt-4 text-[15px] leading-relaxed text-slate-600">{activeStep.fullDesc}</p>
-
-                      <div className="mt-6">
-                        <div className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0B2545] mb-2">
-                          Key Engineering Milestones
-                        </div>
-                        <ul className="divide-y divide-[#0A8BD3]/10">
-                          {activeDeliverables.map((item, idx) => (
-                            <motion.li
-                              key={item}
-                              initial={{ opacity: 0, x: -8 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ duration: 0.35, delay: 0.12 + idx * 0.07, ease: EASE_OUT }}
-                              className="flex items-start gap-3 py-2.5 text-sm text-slate-700 leading-snug"
+                          <div className="pt-6 flex items-end justify-between gap-4">
+                            <span className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#0A8BD3] to-[#4FC3F7] text-white flex items-center justify-center shrink-0 shadow-[0_10px_24px_-10px_rgba(10,139,211,0.7)]">
+                              <StepIcon className="w-6 h-6" />
+                            </span>
+                            <span
+                              aria-hidden="true"
+                              className="font-display font-extrabold text-[64px] xl:text-[72px] leading-[0.8] select-none"
+                              style={{ color: 'transparent', WebkitTextStroke: '1.5px rgba(10, 139, 211, 0.22)' }}
                             >
-                              <CheckCircle2 className="w-[18px] h-[18px] text-[#8DC63F] shrink-0 mt-px" />
-                              <span>{item}</span>
-                            </motion.li>
-                          ))}
-                        </ul>
-                      </div>
-                    </motion.div>
-                  </AnimatePresence>
+                              {String(step.id).padStart(2, '0')}
+                            </span>
+                          </div>
+
+                          <h3 className="mt-4 text-xl xl:text-2xl font-bold text-[#0B2545] font-display leading-tight">
+                            {step.title}
+                          </h3>
+                          <p className="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-[#0A8BD3]">
+                            {step.shortDesc}
+                          </p>
+
+                          <p className="mt-4 text-[15px] leading-relaxed text-slate-600">{step.fullDesc}</p>
+
+                          <div className="mt-6">
+                            <div className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0B2545] mb-2">
+                              Key Engineering Milestones
+                            </div>
+                            <ul className="divide-y divide-[#0A8BD3]/10">
+                              {(PHASE_DELIVERABLES[step.id] || []).map((item) => (
+                                <li key={item} className="flex items-start gap-3 py-2.5 text-sm text-slate-700 leading-snug">
+                                  <CheckCircle2 className="w-[18px] h-[18px] text-[#8DC63F] shrink-0 mt-px" />
+                                  <span>{item}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
 
                   {/* Footer: what comes next */}
                   <div className="mt-6 pt-4 border-t border-[#0A8BD3]/10 flex items-center justify-between gap-3 text-xs">
@@ -517,7 +520,7 @@ export const ApproachWheel: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => goTo(activeIndex + 1)}
-                        className="group w-full flex items-center justify-between gap-3 text-left cursor-pointer"
+                        className="group w-full min-h-8 flex items-center justify-between gap-3 text-left cursor-pointer"
                       >
                         <span className="text-slate-500 truncate">
                           <span className="font-semibold uppercase tracking-wider text-slate-400 mr-1.5">Next</span>
@@ -531,7 +534,7 @@ export const ApproachWheel: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => goTo(0)}
-                        className="group w-full flex items-center justify-between gap-3 text-left cursor-pointer"
+                        className="group w-full min-h-8 flex items-center justify-between gap-3 text-left cursor-pointer"
                       >
                         <span className="flex items-center gap-1.5 font-semibold text-[#0B2545]">
                           <BadgeCheck className="w-4 h-4 text-[#8DC63F]" />
