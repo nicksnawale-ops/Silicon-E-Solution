@@ -509,10 +509,11 @@ const ALIASES: Record<string, string> = {
   'passive-cabling-sol': 'passive-cabling',
 };
 
-export const ServiceVisual: React.FC<{ serviceId: string; className?: string; showLabel?: boolean }> = ({
+export const ServiceVisual: React.FC<{ serviceId: string; className?: string; showLabel?: boolean; paused?: boolean }> = ({
   serviceId,
   className = '',
   showLabel = true,
+  paused = false,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -532,7 +533,7 @@ export const ServiceVisual: React.FC<{ serviceId: string; className?: string; sh
   return (
     <div
       ref={ref}
-      data-paused={visible ? 'false' : 'true'}
+      data-paused={visible && !paused ? 'false' : 'true'}
       className={`sv-stage relative overflow-hidden isolate ${className}`}
       aria-hidden="true"
     >
