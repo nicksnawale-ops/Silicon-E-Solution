@@ -81,7 +81,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div data-lenis-prevent className="fixed inset-0 z-[1200] flex items-center justify-center p-4 sm:p-6 overflow-y-auto overscroll-contain">
+        <div data-lenis-prevent className="fixed inset-0 z-[1200] flex items-end sm:items-center justify-center sm:p-6">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -93,26 +93,31 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
 
           {/* Modal Container */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="quote-modal-title"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 40 }}
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            className="relative w-full max-w-xl bg-white rounded-3xl shadow-2xl border border-[#0A8BD3]/20 overflow-hidden z-10 my-8"
+            className="relative z-10 w-full sm:max-w-xl max-h-[92dvh] sm:max-h-[calc(100dvh-3rem)] flex flex-col bg-white rounded-t-[28px] sm:rounded-3xl shadow-2xl border border-[#0A8BD3]/20 overflow-hidden"
           >
             {/* Header */}
-            <div className="relative p-6 sm:p-8 bg-gradient-to-r from-[#E8F6FD] via-white to-[#E8F6FD] border-b border-[#0A8BD3]/15">
+            <div className="relative shrink-0 px-5 pt-3 pb-4 sm:p-8 pr-16 sm:pr-16 bg-gradient-to-r from-[#E8F6FD] via-white to-[#E8F6FD] border-b border-[#0A8BD3]/15">
+              {/* Grab handle (mobile bottom sheet) */}
+              <span aria-hidden="true" className="sm:hidden block mx-auto mb-3 h-1.5 w-10 rounded-full bg-slate-300/80" />
               <button
                 onClick={onClose}
                 aria-label="Close modal"
-                className="absolute top-6 right-6 w-9 h-9 rounded-full bg-white/80 hover:bg-white text-slate-500 hover:text-[#0B2545] border border-slate-200 flex items-center justify-center transition-colors"
+                className="absolute top-5 right-4 sm:top-6 sm:right-6 w-10 h-10 sm:w-9 sm:h-9 rounded-full bg-white/80 hover:bg-white text-slate-500 hover:text-[#0B2545] border border-slate-200 flex items-center justify-center transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
 
-              <div className="text-xs font-semibold uppercase tracking-wider text-[#0A8BD3] mb-1">
+              <div className="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-[#0A8BD3] mb-1">
                 Design to Handover · Free Assessment
               </div>
-              <h3 className="text-xl sm:text-2xl font-bold text-[#0B2545] font-display">
+              <h3 id="quote-modal-title" className="text-lg sm:text-2xl font-bold text-[#0B2545] font-display leading-snug">
                 Request Infrastructure Consultation
               </h3>
               <p className="text-xs sm:text-sm text-slate-500 mt-1">
@@ -121,7 +126,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
             </div>
 
             {/* Content */}
-            <div className="p-6 sm:p-8">
+            <div data-lenis-prevent className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-5 pt-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:p-8">
               {isSuccess ? (
                 <div className="py-8 text-center space-y-4">
                   <div className="w-16 h-16 mx-auto rounded-full bg-[#8DC63F]/15 border-2 border-[#8DC63F] flex items-center justify-center text-[#8DC63F]">
@@ -162,7 +167,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         placeholder="e.g. Dr. Rajesh Sharma"
-                        className={`w-full px-3.5 py-2.5 rounded-xl border text-sm text-slate-800 focus:outline-none transition-colors ${
+                        className={`w-full px-3.5 py-3 sm:py-2.5 rounded-xl border text-base sm:text-sm text-slate-800 focus:outline-none transition-colors ${
                           errors.name
                             ? 'border-red-400 bg-red-50/30'
                             : 'border-slate-200 focus:border-[#0A8BD3] focus:ring-2 focus:ring-[#0A8BD3]/15'
@@ -180,7 +185,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                         value={formData.organisation}
                         onChange={(e) => setFormData({ ...formData, organisation: e.target.value })}
                         placeholder="e.g. Apex Health Institute"
-                        className={`w-full px-3.5 py-2.5 rounded-xl border text-sm text-slate-800 focus:outline-none transition-colors ${
+                        className={`w-full px-3.5 py-3 sm:py-2.5 rounded-xl border text-base sm:text-sm text-slate-800 focus:outline-none transition-colors ${
                           errors.organisation
                             ? 'border-red-400 bg-red-50/30'
                             : 'border-slate-200 focus:border-[#0A8BD3] focus:ring-2 focus:ring-[#0A8BD3]/15'
@@ -202,7 +207,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         placeholder="rajesh@apexhealth.org"
-                        className={`w-full px-3.5 py-2.5 rounded-xl border text-sm text-slate-800 focus:outline-none transition-colors ${
+                        className={`w-full px-3.5 py-3 sm:py-2.5 rounded-xl border text-base sm:text-sm text-slate-800 focus:outline-none transition-colors ${
                           errors.email
                             ? 'border-red-400 bg-red-50/30'
                             : 'border-slate-200 focus:border-[#0A8BD3] focus:ring-2 focus:ring-[#0A8BD3]/15'
@@ -220,7 +225,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         placeholder="+91 98220 00000"
-                        className={`w-full px-3.5 py-2.5 rounded-xl border text-sm text-slate-800 focus:outline-none transition-colors ${
+                        className={`w-full px-3.5 py-3 sm:py-2.5 rounded-xl border text-base sm:text-sm text-slate-800 focus:outline-none transition-colors ${
                           errors.phone
                             ? 'border-red-400 bg-red-50/30'
                             : 'border-slate-200 focus:border-[#0A8BD3] focus:ring-2 focus:ring-[#0A8BD3]/15'
@@ -237,7 +242,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                     <select
                       value={formData.service}
                       onChange={(e) => setFormData({ ...formData, service: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-800 focus:outline-none focus:border-[#0A8BD3] focus:ring-2 focus:ring-[#0A8BD3]/15 bg-white"
+                      className="w-full px-3.5 py-3 sm:py-2.5 rounded-xl border border-slate-200 text-base sm:text-sm text-slate-800 focus:outline-none focus:border-[#0A8BD3] focus:ring-2 focus:ring-[#0A8BD3]/15 bg-white"
                     >
                       {SERVICES_LIST.map((srv) => (
                         <option key={srv.id} value={srv.title}>
@@ -256,7 +261,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                       placeholder="e.g. Planning a 200-bed hospital ELV passive cabling and nurse call deployment..."
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-800 focus:outline-none focus:border-[#0A8BD3] focus:ring-2 focus:ring-[#0A8BD3]/15 resize-none"
+                      className="w-full px-3.5 py-3 sm:py-2.5 rounded-xl border border-slate-200 text-base sm:text-sm text-slate-800 focus:outline-none focus:border-[#0A8BD3] focus:ring-2 focus:ring-[#0A8BD3]/15 resize-none"
                     />
                   </div>
 
@@ -270,7 +275,8 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                     ) : (
                       <>
                         <Send className="w-4 h-4" />
-                        <span>Submit Infrastructure Proposal Request</span>
+                        <span className="sm:hidden">Submit Request</span>
+                        <span className="hidden sm:inline">Submit Infrastructure Proposal Request</span>
                       </>
                     )}
                   </button>

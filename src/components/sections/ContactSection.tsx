@@ -220,7 +220,7 @@ export const ContactSection: React.FC = () => {
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         placeholder="e.g. Anand Deshmukh"
-                        className={`w-full px-4 py-2.5 rounded-xl border text-sm text-slate-800 focus:outline-none transition-colors ${
+                        className={`w-full px-4 py-3 sm:py-2.5 rounded-xl border text-base sm:text-sm text-slate-800 focus:outline-none transition-colors ${
                           errors.name
                             ? 'border-red-400 bg-red-50/20'
                             : 'border-slate-200 focus:border-[#0A8BD3] focus:ring-2 focus:ring-[#0A8BD3]/15'
@@ -238,7 +238,7 @@ export const ContactSection: React.FC = () => {
                         value={formData.organisation}
                         onChange={(e) => setFormData({ ...formData, organisation: e.target.value })}
                         placeholder="e.g. Pune Health Campus"
-                        className={`w-full px-4 py-2.5 rounded-xl border text-sm text-slate-800 focus:outline-none transition-colors ${
+                        className={`w-full px-4 py-3 sm:py-2.5 rounded-xl border text-base sm:text-sm text-slate-800 focus:outline-none transition-colors ${
                           errors.organisation
                             ? 'border-red-400 bg-red-50/20'
                             : 'border-slate-200 focus:border-[#0A8BD3] focus:ring-2 focus:ring-[#0A8BD3]/15'
@@ -260,7 +260,7 @@ export const ContactSection: React.FC = () => {
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         placeholder="anand@punehealth.edu"
-                        className={`w-full px-4 py-2.5 rounded-xl border text-sm text-slate-800 focus:outline-none transition-colors ${
+                        className={`w-full px-4 py-3 sm:py-2.5 rounded-xl border text-base sm:text-sm text-slate-800 focus:outline-none transition-colors ${
                           errors.email
                             ? 'border-red-400 bg-red-50/20'
                             : 'border-slate-200 focus:border-[#0A8BD3] focus:ring-2 focus:ring-[#0A8BD3]/15'
@@ -278,7 +278,7 @@ export const ContactSection: React.FC = () => {
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         placeholder="+91 98220 12345"
-                        className={`w-full px-4 py-2.5 rounded-xl border text-sm text-slate-800 focus:outline-none transition-colors ${
+                        className={`w-full px-4 py-3 sm:py-2.5 rounded-xl border text-base sm:text-sm text-slate-800 focus:outline-none transition-colors ${
                           errors.phone
                             ? 'border-red-400 bg-red-50/20'
                             : 'border-slate-200 focus:border-[#0A8BD3] focus:ring-2 focus:ring-[#0A8BD3]/15'
@@ -295,7 +295,7 @@ export const ContactSection: React.FC = () => {
                     <select
                       value={formData.service}
                       onChange={(e) => setFormData({ ...formData, service: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-800 focus:outline-none focus:border-[#0A8BD3] focus:ring-2 focus:ring-[#0A8BD3]/15 bg-white"
+                      className="w-full px-4 py-3 sm:py-2.5 rounded-xl border border-slate-200 text-base sm:text-sm text-slate-800 focus:outline-none focus:border-[#0A8BD3] focus:ring-2 focus:ring-[#0A8BD3]/15 bg-white"
                     >
                       {SERVICES_LIST.map((srv) => (
                         <option key={srv.id} value={srv.title}>
@@ -314,7 +314,7 @@ export const ContactSection: React.FC = () => {
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                       placeholder="Share details on your site location, timeline, or required SITC scope..."
-                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-800 focus:outline-none focus:border-[#0A8BD3] focus:ring-2 focus:ring-[#0A8BD3]/15 resize-none"
+                      className="w-full px-4 py-3 sm:py-2.5 rounded-xl border border-slate-200 text-base sm:text-sm text-slate-800 focus:outline-none focus:border-[#0A8BD3] focus:ring-2 focus:ring-[#0A8BD3]/15 resize-none"
                     />
                   </div>
 
