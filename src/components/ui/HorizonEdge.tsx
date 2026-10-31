@@ -5,8 +5,9 @@ import { useReducedMotion } from '../../hooks/useReducedMotion';
 /**
  * A soft curved "horizon" that sits on top of a white section and rises into the
  * section above it. A fine blue→lime light stroke traces the curve (revealed from
- * the centre outwards), and the arc gently flattens as the section scrolls up to
- * the top of the viewport.
+ * the centre outwards), and the arc eases slightly as the section scrolls up. Height
+ * scales with viewport width so the arc keeps the same pronounced shape on
+ * desktop as on mobile.
  *
  * Place it as the first child of a `relative` white section. Everything animates
  * with transform / opacity / clip-path only.
@@ -17,7 +18,7 @@ export const HorizonEdge: React.FC<{ fill?: string }> = ({ fill = '#FFFFFF' }) =
 
   // 0 when the edge enters from the bottom of the viewport, 1 when it reaches ~20% from the top.
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'start 20%'] });
-  const flatten = useTransform(scrollYProgress, [0.35, 1], [1, 0.28]);
+  const flatten = useTransform(scrollYProgress, [0.5, 1], [1, 0.8]);
   const glowOpacity = useTransform(scrollYProgress, [0.1, 0.5, 1], [0, 1, 0.55]);
 
   // Curve in a 1440×120 box: rests on the section edge at both sides, crests in the middle.
@@ -27,7 +28,7 @@ export const HorizonEdge: React.FC<{ fill?: string }> = ({ fill = '#FFFFFF' }) =
     <div
       ref={ref}
       aria-hidden="true"
-      className="pointer-events-none absolute inset-x-0 bottom-full h-[44px] sm:h-[80px] lg:h-[104px]"
+      className="pointer-events-none absolute inset-x-0 bottom-full h-[clamp(44px,11.5vw,190px)]"
     >
       {/* Soft light pooling behind the crest */}
       <motion.div
@@ -79,8 +80,8 @@ export const HorizonEdge: React.FC<{ fill?: string }> = ({ fill = '#FFFFFF' }) =
               d={curve}
               fill="none"
               stroke="url(#horizon-stroke)"
-              strokeWidth="10"
-              strokeOpacity="0.18"
+              strokeWidth="14"
+              strokeOpacity="0.22"
               vectorEffect="non-scaling-stroke"
               style={{ filter: 'blur(6px)' }}
             />
@@ -89,7 +90,7 @@ export const HorizonEdge: React.FC<{ fill?: string }> = ({ fill = '#FFFFFF' }) =
               d={curve}
               fill="none"
               stroke="url(#horizon-stroke)"
-              strokeWidth="1.5"
+              strokeWidth="2"
               vectorEffect="non-scaling-stroke"
             />
           </svg>
