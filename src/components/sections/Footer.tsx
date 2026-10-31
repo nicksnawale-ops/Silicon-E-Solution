@@ -19,7 +19,33 @@ export const Footer: React.FC = () => {
         />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Oversized brand watermark behind the footer content. SVG text with a fixed
+          textLength always spans the full width on any screen without wrapping. */}
+      <div aria-hidden="true" className="hidden md:block pointer-events-none select-none absolute inset-x-0 bottom-[60px] px-6 z-0">
+        <svg viewBox="0 0 1600 200" preserveAspectRatio="xMidYMax meet" className="w-full h-auto max-h-[230px]">
+          <defs>
+            <linearGradient id="footer-watermark-fill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#0B2545" stopOpacity="0.075" />
+              <stop offset="100%" stopColor="#0A8BD3" stopOpacity="0.025" />
+            </linearGradient>
+          </defs>
+          <text
+            x="800"
+            y="168"
+            textAnchor="middle"
+            textLength="1560"
+            lengthAdjust="spacingAndGlyphs"
+            fontFamily="Poppins, sans-serif"
+            fontWeight={800}
+            fontSize="190"
+            fill="url(#footer-watermark-fill)"
+          >
+            SILICON E SOLUTION
+          </text>
+        </svg>
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 pb-12 border-b border-[#0A8BD3]/15">
           {/* Brand Info */}
           <div className="lg:col-span-4 space-y-4 text-left">
