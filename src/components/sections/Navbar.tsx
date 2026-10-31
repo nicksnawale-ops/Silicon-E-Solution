@@ -400,11 +400,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenQuote, activeSection, onSe
               else navigate('/');
             }}
             className="group/logo flex items-center shrink-0 cursor-pointer rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0A8BD3]"
-            aria-label="Silicon é Solution - Back to top"
+            aria-label="Silicon e Solution - Back to top"
           >
             <motion.img
               src="/assets/silicon-logo.png"
-              alt="Silicon é Solution"
+              alt="Silicon e Solution"
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: EASE_OUT }}
@@ -500,7 +500,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenQuote, activeSection, onSe
           <div className="hidden lg:flex items-center gap-2.5 shrink-0">
             <a
               href="tel:02022953999"
-              aria-label="Call Silicon é Solution at 020 2295 3999"
+              aria-label="Call Silicon e Solution at 020 2295 3999"
               className="group/phone relative h-11 rounded-full border border-[#0A8BD3]/20 bg-white/70 hover:bg-white shadow-[0_4px_14px_-8px_rgba(11,37,69,0.25)] flex items-center text-[#0A8BD3] overflow-hidden transition-colors duration-300 cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0A8BD3]"
             >
               <span className="w-11 h-11 flex items-center justify-center shrink-0">
@@ -689,7 +689,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenQuote, activeSection, onSe
                 {mobileCompanyOpen && (
                   <div className="pl-3 pb-3 space-y-2 border-l-2 border-[#0A8BD3]/30 ml-2">
                     {[
-                      ['About Us', '#about'],
+                      ['About Us', '/about'],
                       ['Our Clients', '#clients'],
                       ['Our Team', '#team'],
                     ].map(([label, href]) => (
@@ -833,7 +833,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenQuote, activeSection, onSe
                 <a
                   href="tel:02022953999"
                   className="w-12 h-12 rounded-xl bg-white/80 border border-[#0A8BD3]/25 text-[#0A8BD3] flex items-center justify-center shrink-0 shadow-xs active:scale-95 transition-transform"
-                  aria-label="Call Silicon é Solution"
+                  aria-label="Call Silicon e Solution"
                 >
                   <Phone className="w-5 h-5" />
                 </a>
@@ -1041,7 +1041,7 @@ const IndustriesMenu: React.FC<{ onNav: (href: string) => void }> = ({ onNav }) 
 
 const COMPANY_LINKS = [
   {
-    href: '#about',
+    href: '/about',
     title: 'About Us',
     desc: '15+ years of IT & ELV infrastructure delivery, PAN India.',
     Icon: Building2,

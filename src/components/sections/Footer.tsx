@@ -23,10 +23,10 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 pb-12 border-b border-[#0A8BD3]/15">
           {/* Brand Info */}
           <div className="lg:col-span-4 space-y-4 text-left">
-            <a href="#home" className="inline-block focus:outline-none" aria-label="Silicon é Solution Home">
+            <a href="#home" className="inline-block focus:outline-none" aria-label="Silicon e Solution Home">
               <img
                 src="/assets/silicon-logo.png"
-                alt="Silicon é Solution"
+                alt="Silicon e Solution"
                 className="h-10 w-auto object-contain hover:opacity-90 transition-opacity"
               />
             </a>
@@ -57,13 +57,13 @@ export const Footer: React.FC = () => {
                 <a href="#home" className="hover:text-[#0A8BD3] transition-colors">Home</a>
               </li>
               <li>
-                <a href="#about" className="hover:text-[#0A8BD3] transition-colors">About Us</a>
+                <a href="/about" className="hover:text-[#0A8BD3] transition-colors">About Us</a>
               </li>
               <li>
                 <a href="#approach" className="hover:text-[#0A8BD3] transition-colors">7-Step Approach</a>
               </li>
               <li>
-                <a href="#services" className="hover:text-[#0A8BD3] transition-colors">Our Services</a>
+                <a href="/services" className="hover:text-[#0A8BD3] transition-colors">Our Services</a>
               </li>
               <li>
                 <a href="#healthcare" className="hover:text-[#0A8BD3] transition-colors">Healthcare ELV</a>
@@ -129,7 +129,7 @@ export const Footer: React.FC = () => {
 
         {/* Bottom Bar: Copyright & Back to Top */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-          <p>© 2026 Silicon é Solution. All rights reserved. A Complete IT Infrastructure Solution Provider.</p>
+          <p>© 2026 Silicon e Solution. All rights reserved. A Complete IT Infrastructure Solution Provider.</p>
 
           <button
             onClick={scrollToTop}

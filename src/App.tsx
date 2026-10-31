@@ -26,6 +26,7 @@ import { ServiceModal } from './components/ui/ServiceModal';
 import { QuoteModal } from './components/ui/QuoteModal';
 import { ServiceItem } from './types';
 import { ServicesPage } from './pages/ServicesPage';
+import { AboutPage } from './pages/AboutPage';
 import { usePathname, navigate, scrollToHash } from './lib/router';
 import { lenisRef } from './lib/lenis';
 
@@ -35,7 +36,10 @@ export default function App() {
   const [quoteServicePrefill, setQuoteServicePrefill] = useState<string>('');
   const [activeSection, setActiveSection] = useState<string>('home');
   const pathname = usePathname();
-  const isServicesPage = pathname.replace(/\/+$/, '') === '/services';
+  const route = pathname.replace(/\/+$/, '') || '/';
+  const isServicesPage = route === '/services';
+  const isAboutPage = route === '/about';
+  const isSubPage = isServicesPage || isAboutPage;
 
   // Lenis Smooth Inertial Scroll (Desktop Mouse Only, disabled on < 1024px and touch devices)
   useEffect(() => {
@@ -114,7 +118,7 @@ export default function App() {
     ];
 
     const handleScroll = () => {
-      if (window.location.pathname.replace(/\/+$/, '') === '/services') return;
+      if ((window.location.pathname.replace(/\/+$/, '') || '/') !== '/') return;
       const scrollPos = window.scrollY + 250;
       for (const id of sectionIds) {
         const el = document.getElementById(id);
@@ -143,11 +147,26 @@ export default function App() {
       window.scrollTo(0, 0);
     }
     if (isServicesPage) setActiveSection('services');
-  }, [pathname, isServicesPage]);
+    if (isAboutPage) setActiveSection('about');
+  }, [pathname, isServicesPage, isAboutPage]);
+
+  // Internal page links (<a href="/about">, "/services", "/#contact") navigate without a full reload.
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      const a = (e.target as HTMLElement)?.closest?.('a[href^="/"]') as HTMLAnchorElement | null;
+      if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || a.target === '_blank') return;
+      const href = a.getAttribute('href') || '';
+      if (href.startsWith('//') || /\.[a-z0-9]+($|[?#])/i.test(href.split('#')[0])) return;
+      e.preventDefault();
+      navigate(href);
+    };
+    document.addEventListener('click', onClick);
+    return () => document.removeEventListener('click', onClick);
+  }, []);
 
   // On sub-pages, in-page "#section" links (footer, CTAs) go back to the home page section.
   useEffect(() => {
-    if (!isServicesPage) return;
+    if (!isSubPage) return;
     const onClick = (e: MouseEvent) => {
       const a = (e.target as HTMLElement)?.closest?.('a[href^="#"]') as HTMLAnchorElement | null;
       if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey) return;
@@ -156,7 +175,7 @@ export default function App() {
     };
     document.addEventListener('click', onClick);
     return () => document.removeEventListener('click', onClick);
-  }, [isServicesPage]);
+  }, [isSubPage]);
 
   const handleOpenQuoteWithService = (serviceTitle: string) => {
     setQuoteServicePrefill(serviceTitle);
@@ -180,7 +199,14 @@ export default function App() {
 
       {/* Main Content Flow */}
       <main>
-        {isServicesPage ? (
+        {isAboutPage ? (
+          <AboutPage
+            onOpenQuote={() => {
+              setQuoteServicePrefill('');
+              setIsQuoteOpen(true);
+            }}
+          />
+        ) : isServicesPage ? (
           <ServicesPage
             onSelectService={(service) => setSelectedService(service)}
             onOpenQuote={() => {
@@ -201,7 +227,7 @@ export default function App() {
             {/* Stats & Trust Marquee */}
             <StatsAndMarquee />
 
-            {/* About Silicon é Solution */}
+            {/* About Silicon e Solution */}
             <AboutUs
               onOpenQuote={() => {
                 setQuoteServicePrefill('');

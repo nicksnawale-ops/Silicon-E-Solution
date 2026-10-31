@@ -416,12 +416,12 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
                 >
                   <img
                     src="/assets/silicon-logo.png"
-                    alt="Silicon é Solution"
+                    alt="Silicon e Solution"
                     className="h-9 sm:h-12 w-auto object-contain drop-shadow-xs"
                   />
                 </motion.div>
                 <h3 className="text-[11px] sm:text-xs font-bold text-[#0B2545] font-display uppercase tracking-wider">
-                  Silicon é Solution
+                  Silicon e Solution
                 </h3>
                 <span className="text-[9px] sm:text-[10px] text-[#0A8BD3] font-semibold mt-0.5">
                   Infrastructure Hub

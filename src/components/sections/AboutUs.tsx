@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { ShieldCheck, Award, MapPin, CheckCircle2, ArrowRight } from 'lucide-react';
 import { ABOUT_TEXT, COMPANY_INFO } from '../../data/content';
+import { navigate } from '../../lib/router';
 
 interface AboutUsProps {
   onOpenQuote: () => void;
@@ -60,7 +61,7 @@ export const AboutUs: React.FC<AboutUsProps> = ({ onOpenQuote }) => {
               viewport={{ once: true }}
               className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#0A8BD3]"
             >
-              <span>About Silicon é Solution</span>
+              <span>About Silicon e Solution</span>
               <span aria-hidden="true">·</span>
               <span>Pune, Maharashtra</span>
             </motion.div>
@@ -114,21 +115,26 @@ export const AboutUs: React.FC<AboutUsProps> = ({ onOpenQuote }) => {
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               transition={{ delay: 0.4 }}
-              className="pt-2 flex items-center gap-4"
+              className="pt-2 flex flex-wrap items-center gap-3"
             >
-              <button
-                onClick={onOpenQuote}
-                className="px-6 py-3 rounded-full bg-gradient-to-r from-[#0A8BD3] to-[#4FC3F7] text-white text-xs sm:text-sm font-semibold shadow-md shadow-[#0A8BD3]/25 hover:shadow-lg hover:shadow-[#0A8BD3]/40 transition-all flex items-center gap-2 cursor-pointer"
-              >
-                <span>Consult Our Leadership</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
               <a
-                href="#approach"
-                className="text-xs sm:text-sm font-semibold text-[#0B2545] hover:text-[#0A8BD3] transition-colors"
+                href="/about"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate('/about');
+                }}
+                className="group px-6 py-3 rounded-full bg-gradient-to-r from-[#0A8BD3] to-[#4FC3F7] text-white text-xs sm:text-sm font-semibold shadow-md shadow-[#0A8BD3]/25 hover:shadow-lg hover:shadow-[#0A8BD3]/40 transition-all flex items-center gap-2 cursor-pointer"
               >
-                Explore Turnkey Delivery →
+                <span>More about us</span>
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
               </a>
+              <button
+                type="button"
+                onClick={onOpenQuote}
+                className="px-6 py-3 rounded-full bg-white text-[#0B2545] text-xs sm:text-sm font-semibold ring-1 ring-[#0A8BD3]/20 hover:ring-[#0A8BD3]/50 transition cursor-pointer"
+              >
+                Consult our leadership
+              </button>
             </motion.div>
           </div>
 

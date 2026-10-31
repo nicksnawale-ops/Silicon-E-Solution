@@ -33,7 +33,7 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onSelectService, onO
 
   useEffect(() => {
     const prev = document.title;
-    document.title = 'Services | Silicon é Solution — IT Infrastructure, ELV, AV & Power';
+    document.title = 'Services | Silicon e Solution — IT Infrastructure, ELV, AV & Power';
     return () => {
       document.title = prev;
     };

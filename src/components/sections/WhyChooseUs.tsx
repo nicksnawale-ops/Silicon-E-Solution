@@ -33,7 +33,7 @@ export const WhyChooseUs: React.FC = () => {
             <span>Uncompromising Accountability</span>
           </div>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#0B2545] font-display tracking-tight">
-            Why Partner with Silicon é Solution?
+            Why Partner with Silicon e Solution?
           </h2>
           <p className="text-slate-600 text-sm sm:text-base mt-2 leading-relaxed">
             We bridge the gap between initial architectural blueprints and decades of flawless technological operation.

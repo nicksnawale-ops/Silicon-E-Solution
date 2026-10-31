@@ -78,7 +78,7 @@ export const ContactSection: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-[#0B2545] font-display">
-                    Silicon é Solution
+                    Silicon e Solution
                   </h3>
                   <p className="text-xs text-slate-500 font-mono">
                     PAN India Turnkey Operations
@@ -156,7 +156,7 @@ export const ContactSection: React.FC = () => {
             {/* Embedded Google Map (Bavdhan, Pune) */}
             <div className="rounded-3xl overflow-hidden border border-[#0A8BD3]/20 shadow-md h-56 bg-slate-100">
               <iframe
-                title="Silicon é Solution Location Bavdhan Pune"
+                title="Silicon e Solution Location Bavdhan Pune"
                 src={COMPANY_INFO.mapEmbedUrl}
                 width="100%"
                 height="100%"

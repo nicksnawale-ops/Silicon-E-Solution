@@ -30,7 +30,7 @@ const monogram = (logoText: string) => {
   return letters.toUpperCase();
 };
 
-function Counter({ end, suffix }: { end: number; suffix: string }) {
+export function Counter({ end, suffix }: { end: number; suffix: string }) {
   const [count, setCount] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref, { once: true, amount: 0.5 });
