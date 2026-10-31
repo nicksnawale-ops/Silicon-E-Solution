@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import {
   ArrowRight,
@@ -144,13 +144,13 @@ const Blueprint: React.FC<{
             <ServiceVisual serviceId={id} className="flex-1 h-full min-h-[200px] sm:min-h-[240px] rounded-[21px]" />
           </div>
 
-          <div className="relative grid grid-cols-3 gap-2.5 sm:gap-3 pt-5">
+          <div className="relative grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 pt-5">
             {item.specs.map((spec) => (
-              <div key={spec.label} className="rounded-2xl bg-white/[0.06] ring-1 ring-white/10 p-3 backdrop-blur-sm">
-                <span className="block font-mono text-[9px] sm:text-[10px] uppercase tracking-wider text-white/45 leading-tight">
+              <div key={spec.label} className="flex items-center justify-between gap-4 sm:block rounded-2xl bg-white/[0.06] ring-1 ring-white/10 px-4 py-3 sm:p-3">
+                <span className="block font-mono text-[10px] uppercase tracking-wider text-white/45 leading-tight">
                   {spec.label}
                 </span>
-                <span className="mt-1 block text-[11px] sm:text-sm font-bold font-display text-white leading-snug">{spec.value}</span>
+                <span className="sm:mt-1 block text-right sm:text-left text-[13px] sm:text-sm font-bold font-display text-white leading-snug">{spec.value}</span>
               </div>
             ))}
           </div>
@@ -237,6 +237,7 @@ const DomainHeader: React.FC<{ domain: SolutionDomain; index: number }> = ({ dom
 
 export const SolutionsPage: React.FC<SolutionsPageProps> = ({ onSelectService, onOpenQuote }) => {
   const [active, setActive] = useState<string>(ORDERED_SOLUTIONS[0].item.id);
+  const chipBarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const prev = document.title;
@@ -263,7 +264,13 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({ onSelectService, o
 
   // Keep the active chip visible in the horizontally scrolling index bar.
   useEffect(() => {
-    document.getElementById(`chip-${active}`)?.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+    // Scroll only the bar sideways — scrollIntoView would also move the page and
+    // interrupt the visitor's own (momentum) scrolling, which felt like "sticking".
+    const bar = chipBarRef.current;
+    const chip = document.getElementById(`chip-${active}`);
+    if (!bar || !chip) return;
+    const left = chip.offsetLeft - (bar.clientWidth - chip.offsetWidth) / 2;
+    bar.scrollTo({ left: Math.max(0, left), behavior: 'smooth' });
   }, [active]);
 
   const jump = (id: string) => navigate(`/solutions#${id}`);
@@ -407,7 +414,7 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({ onSelectService, o
       {/* ================= Sticky architecture bar ================= */}
       <div className="sticky top-16 z-30 py-3 backdrop-blur-xl bg-[#E4EFF8]/80 border-y border-[#0A8BD3]/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+          <div ref={chipBarRef} className="relative flex items-center gap-1.5 overflow-x-auto no-scrollbar">
             {ORDERED_SOLUTIONS.map(({ item }) => {
               const Icon = solutionIcons[item.id] ?? Network;
               const isActive = active === item.id;
