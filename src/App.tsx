@@ -201,7 +201,7 @@ export default function App() {
             {/* Stats & Trust Marquee */}
             <StatsAndMarquee />
 
-            {/* About Silicon é Solution */}
+            {/* About Silicon e Solution */}
             <AboutUs
               onOpenQuote={() => {
                 setQuoteServicePrefill('');

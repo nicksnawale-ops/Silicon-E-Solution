@@ -8,7 +8,7 @@ import {
 } from '../types';
 
 export const COMPANY_INFO = {
-  name: 'Silicon é Solution',
+  name: 'Silicon e Solution',
   legalName: 'M/s. Silicon e Solution',
   tagline: 'A Complete IT Infrastructure Solution Provider.',
   subtagline:
@@ -33,7 +33,7 @@ export const STATS = [
 
 export const ABOUT_TEXT = {
   paragraph1:
-    'Silicon é Solution is a complete IT Infrastructure solution provider dedicated to providing clients with innovative solutions for their technological needs. We have been in this business for over 15 years and have a strong hold in the education and government sectors, commercial units and construction, with business transactions carried out PAN India.',
+    'Silicon e Solution is a complete IT Infrastructure solution provider dedicated to providing clients with innovative solutions for their technological needs. We have been in this business for over 15 years and have a strong hold in the education and government sectors, commercial units and construction, with business transactions carried out PAN India.',
   paragraph2:
     'We possess the requisite technical and engineering resources to execute mission-critical projects from initial consulting and design documentation through installation, commissioning, and lifetime post-sale support.',
   sectors: [

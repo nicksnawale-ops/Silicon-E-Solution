@@ -60,7 +60,7 @@ export const AboutUs: React.FC<AboutUsProps> = ({ onOpenQuote }) => {
               viewport={{ once: true }}
               className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#0A8BD3]"
             >
-              <span>About Silicon é Solution</span>
+              <span>About Silicon e Solution</span>
               <span aria-hidden="true">·</span>
               <span>Pune, Maharashtra</span>
             </motion.div>
