@@ -92,10 +92,10 @@ export const Footer: React.FC = () => {
                 <a href="/services" className="hover:text-[#0A8BD3] transition-colors">Our Services</a>
               </li>
               <li>
-                <a href="#healthcare" className="hover:text-[#0A8BD3] transition-colors">Healthcare ELV</a>
+                <a href="/industries#healthcare" className="hover:text-[#0A8BD3] transition-colors">Healthcare ELV</a>
               </li>
               <li>
-                <a href="#education" className="hover:text-[#0A8BD3] transition-colors">Campus AV</a>
+                <a href="/industries#education" className="hover:text-[#0A8BD3] transition-colors">Campus AV</a>
               </li>
               <li>
                 <a href="#solutions" className="hover:text-[#0A8BD3] transition-colors">Technical Specs</a>
