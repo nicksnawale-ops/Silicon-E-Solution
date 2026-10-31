@@ -689,7 +689,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenQuote, activeSection, onSe
                 {mobileCompanyOpen && (
                   <div className="pl-3 pb-3 space-y-2 border-l-2 border-[#0A8BD3]/30 ml-2">
                     {[
-                      ['About Us', '#about'],
+                      ['About Us', '/about'],
                       ['Our Clients', '#clients'],
                       ['Our Team', '#team'],
                     ].map(([label, href]) => (
@@ -1041,7 +1041,7 @@ const IndustriesMenu: React.FC<{ onNav: (href: string) => void }> = ({ onNav }) 
 
 const COMPANY_LINKS = [
   {
-    href: '#about',
+    href: '/about',
     title: 'About Us',
     desc: '15+ years of IT & ELV infrastructure delivery, PAN India.',
     Icon: Building2,

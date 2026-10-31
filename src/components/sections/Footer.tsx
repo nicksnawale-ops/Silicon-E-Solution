@@ -57,13 +57,13 @@ export const Footer: React.FC = () => {
                 <a href="#home" className="hover:text-[#0A8BD3] transition-colors">Home</a>
               </li>
               <li>
-                <a href="#about" className="hover:text-[#0A8BD3] transition-colors">About Us</a>
+                <a href="/about" className="hover:text-[#0A8BD3] transition-colors">About Us</a>
               </li>
               <li>
                 <a href="#approach" className="hover:text-[#0A8BD3] transition-colors">7-Step Approach</a>
               </li>
               <li>
-                <a href="#services" className="hover:text-[#0A8BD3] transition-colors">Our Services</a>
+                <a href="/services" className="hover:text-[#0A8BD3] transition-colors">Our Services</a>
               </li>
               <li>
                 <a href="#healthcare" className="hover:text-[#0A8BD3] transition-colors">Healthcare ELV</a>
