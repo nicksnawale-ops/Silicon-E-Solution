@@ -22,7 +22,7 @@ export const Footer: React.FC = () => {
       {/* Oversized brand watermark behind the footer content. SVG text with a fixed
           textLength always spans the full width on any screen without wrapping. */}
       <div aria-hidden="true" className="hidden md:block pointer-events-none select-none absolute inset-x-0 bottom-[60px] px-6 z-0">
-        <svg viewBox="0 0 1600 200" preserveAspectRatio="xMidYMax meet" className="w-full h-auto max-h-[230px]">
+        <svg viewBox="0 -30 1600 230" preserveAspectRatio="xMidYMax meet" className="w-full h-auto max-h-[260px]">
           <defs>
             <linearGradient id="footer-watermark-fill" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#0B2545" stopOpacity="0.075" />
@@ -40,7 +40,7 @@ export const Footer: React.FC = () => {
             fontSize="190"
             fill="url(#footer-watermark-fill)"
           >
-            SILICON E SOLUTION
+            SILICON É SOLUTION
           </text>
         </svg>
       </div>
@@ -49,10 +49,10 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 pb-12 border-b border-[#0A8BD3]/15">
           {/* Brand Info */}
           <div className="lg:col-span-4 space-y-4 text-left">
-            <a href="#home" className="inline-block focus:outline-none" aria-label="Silicon e Solution Home">
+            <a href="#home" className="inline-block focus:outline-none" aria-label="Silicon é Solution Home">
               <img
                 src="/assets/silicon-logo.png"
-                alt="Silicon e Solution"
+                alt="Silicon é Solution"
                 className="h-10 w-auto object-contain hover:opacity-90 transition-opacity"
               />
             </a>
@@ -155,7 +155,7 @@ export const Footer: React.FC = () => {
 
         {/* Bottom Bar: Copyright & Back to Top */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-          <p>© 2026 Silicon e Solution. All rights reserved. A Complete IT Infrastructure Solution Provider.</p>
+          <p>© 2026 Silicon é Solution. All rights reserved. A Complete IT Infrastructure Solution Provider.</p>
 
           <button
             onClick={scrollToTop}

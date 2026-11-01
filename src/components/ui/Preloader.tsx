@@ -58,7 +58,7 @@ export const Preloader: React.FC<PreloaderProps> = ({ onComplete }) => {
               >
                 <img
                   src="/assets/silicon-logo.png"
-                  alt="Silicon e Solution"
+                  alt="Silicon é Solution"
                   className="h-14 sm:h-16 w-auto object-contain"
                 />
               </motion.div>
