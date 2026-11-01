@@ -20,6 +20,7 @@ import { CtaBand } from './components/sections/CtaBand';
 import { ContactSection } from './components/sections/ContactSection';
 import { Footer } from './components/sections/Footer';
 import { Preloader } from './components/ui/Preloader';
+import { SectionConnector } from './components/ui/SectionConnector';
 import { FloatingActions } from './components/ui/FloatingActions';
 import { ServiceModal } from './components/ui/ServiceModal';
 import { QuoteModal } from './components/ui/QuoteModal';
@@ -257,6 +258,9 @@ export default function App() {
 
             {/* 7-Step Turnkey Approach Wheel */}
             <ApproachWheel />
+
+            {/* Hand-off: 7 delivery phases → 15 services */}
+            <SectionConnector from={{ value: '07', label: 'Phases' }} to={{ value: '15', label: 'Services' }} />
 
             {/* 15 Bento Services */}
             <ServicesGrid onSelectService={(service) => setSelectedService(service)} />
