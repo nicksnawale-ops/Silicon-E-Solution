@@ -1,26 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowRight, ArrowUpRight, Building2, Network, Shield } from 'lucide-react';
-import { SHOWCASE_ITEMS } from '../../data/content';
-import { SOLUTION_DOMAINS, SolutionDomainId, solutionHref } from '../../data/solutions';
+import { ArrowRight, ArrowUpRight, Briefcase, HeartPulse, Layers, Network, Server } from 'lucide-react';
+import { SHOWCASE_ITEMS, SERVICES_LIST } from '../../data/content';
+import { SOLUTION_DOMAINS, SolutionDomainId, solutionHref, servicesForSolution } from '../../data/solutions';
+import { serviceIconMap } from '../ui/ServiceCard';
 import { ServiceVisual } from '../ui/ServiceVisual';
 import { solutionIcons } from '../../pages/SolutionsPage';
 import { navigate } from '../../lib/router';
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
-/** Each engineering domain gets its own light accent. */
+/** Each sector gets its own light accent. */
 const DOMAIN_STYLE: Record<SolutionDomainId, { icon: React.ElementType; accent: string; soft: string; ring: string }> = {
-  network: { icon: Network, accent: '#0A8BD3', soft: '#E6F4FC', ring: 'rgba(10,139,211,0.35)' },
-  safety: { icon: Shield, accent: '#5E9E1A', soft: '#EEF7E2', ring: 'rgba(110,174,31,0.4)' },
-  building: { icon: Building2, accent: '#0E9AA7', soft: '#E3F6F7', ring: 'rgba(14,154,167,0.35)' },
-};
-
-/** Standards each domain is engineered to (shown under the solution list). */
-const DOMAIN_STANDARDS: Record<SolutionDomainId, string[]> = {
-  network: ['OSPF · BGP · VRRP', 'WPA3 + 802.1X', 'Tier III', 'Fluke Certified'],
-  safety: ['EN54 / NFPA 72', 'HTM 08-03', 'AI Face & ANPR', 'IP68'],
-  building: ['BACnet IP', 'Modbus · MQTT', 'Opus & G.722 HD', 'TLS & SRTP'],
+  care: { icon: HeartPulse, accent: '#5E9E1A', soft: '#EEF7E2', ring: 'rgba(110,174,31,0.4)' },
+  workplace: { icon: Briefcase, accent: '#0A8BD3', soft: '#E6F4FC', ring: 'rgba(10,139,211,0.35)' },
+  critical: { icon: Server, accent: '#0E9AA7', soft: '#E3F6F7', ring: 'rgba(14,154,167,0.35)' },
 };
 
 const ALL = SOLUTION_DOMAINS.flatMap((d) => d.solutionIds.map((id) => ({ domain: d.id, id })));
@@ -54,7 +48,7 @@ export const SolutionsTeaser: React.FC = () => {
     return () => io.disconnect();
   }, []);
 
-  // Gently tour all architectures until the visitor takes over.
+  // Gently tour all solutions until the visitor takes over.
   useEffect(() => {
     if (!auto || !inView) return;
     const t = setTimeout(() => {
@@ -97,15 +91,15 @@ export const SolutionsTeaser: React.FC = () => {
             transition={{ duration: 0.6 }}
             className="max-w-2xl"
           >
-            <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[#0A8BD3]">Solution architectures</div>
+            <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[#0A8BD3]">Integrated solutions</div>
             <h2 className="mt-2 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-[#0B2545] font-display">
-              Engineered systems,{' '}
+              Many services,{' '}
               <span className="bg-gradient-to-r from-[#0A8BD3] via-[#1FA8C9] to-[#6FAE1F] bg-clip-text text-transparent">
-                documented down to the spec.
+                one integrated system.
               </span>
             </h2>
             <p className="mt-3 text-slate-600 text-sm sm:text-base leading-relaxed">
-              {SHOWCASE_ITEMS.length} turnkey architectures across {SOLUTION_DOMAINS.length} engineering domains. Pick one to see
+              {SHOWCASE_ITEMS.length} turnkey solutions that combine our {SERVICES_LIST.length} services into one coordinated system. Pick one to see
               it running.
             </p>
           </motion.div>
@@ -156,7 +150,7 @@ export const SolutionsTeaser: React.FC = () => {
                     </span>
                     <span className="min-w-0">
                       <span className="hidden sm:block font-mono text-[10px] font-semibold" style={{ color: st.accent }}>
-                        DOMAIN {pad(i + 1)} · {d.solutionIds.length} systems
+                        SECTOR {pad(i + 1)} · {d.solutionIds.length} solutions
                       </span>
                       <span className="block text-[11px] sm:text-sm font-bold text-[#0B2545] font-display leading-tight lg:whitespace-nowrap">{d.name}</span>
                     </span>
@@ -215,7 +209,7 @@ export const SolutionsTeaser: React.FC = () => {
                           </span>
                           <span className="min-w-0 flex-1">
                             <span className="block font-mono text-[10px] font-semibold text-slate-400">
-                              {pad(n)} · {it.highlight}
+                              {pad(n)} · {servicesForSolution(sid).length} services combined
                             </span>
                             <span className={`block text-[14px] font-bold font-display leading-snug ${isActive ? 'text-[#0B2545]' : 'text-slate-600'}`}>
                               {it.title}
@@ -234,7 +228,7 @@ export const SolutionsTeaser: React.FC = () => {
                 <div className="hidden lg:block mt-auto pt-8">
                   <div className="rounded-2xl p-4 ring-1 ring-[#0A8BD3]/10" style={{ background: `linear-gradient(135deg, ${style.soft}, #FFFFFF)` }}>
                     <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#0B2545]/70">Engineered to standard</span>
+                      <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#0B2545]/70">Services combined</span>
                       <span className="flex gap-1">
                         {ALL.map((x) => (
                           <span
@@ -250,11 +244,17 @@ export const SolutionsTeaser: React.FC = () => {
                       </span>
                     </div>
                     <div className="mt-3 flex flex-wrap gap-1.5">
-                      {DOMAIN_STANDARDS[domainId].map((std) => (
-                        <span key={std} className="px-2.5 py-1 rounded-full bg-white ring-1 ring-[#0A8BD3]/10 font-mono text-[11px] font-semibold text-[#0B2545]">
-                          {std}
-                        </span>
-                      ))}
+                      {servicesForSolution(solutionId).map((svc) => {
+                        const SvcIcon = serviceIconMap[svc.iconName] || Layers;
+                        return (
+                          <span key={svc.id} className="inline-flex items-center gap-1.5 pl-1 pr-2.5 py-1 rounded-full bg-white ring-1 ring-[#0A8BD3]/10 text-[12px] font-semibold text-[#0B2545]">
+                            <span className="w-5 h-5 rounded-full flex items-center justify-center" style={{ background: style.soft, color: style.accent }}>
+                              <SvcIcon className="w-3 h-3" />
+                            </span>
+                            {svc.title}
+                          </span>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
@@ -278,7 +278,7 @@ export const SolutionsTeaser: React.FC = () => {
                       </span>
                     </span>
                     <span className="font-mono text-[10px] font-semibold text-slate-400 shrink-0">
-                      ARCH {pad(globalIndex + 1)} / {pad(ALL.length)}
+                      SOLUTION {pad(globalIndex + 1)} / {pad(ALL.length)}
                     </span>
                   </div>
 
@@ -293,7 +293,7 @@ export const SolutionsTeaser: React.FC = () => {
                         className="absolute inset-0"
                       >
                         <ServiceVisual
-                          serviceId={solutionId}
+                          serviceId={item.visual}
                           tone="light"
                           className="h-full rounded-[18px] ring-1 ring-[#0A8BD3]/15 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]"
                         />
@@ -329,7 +329,7 @@ export const SolutionsTeaser: React.FC = () => {
                           className="group inline-flex items-center gap-1.5 shrink-0 self-start sm:self-auto px-4 py-2.5 rounded-full text-sm font-semibold text-white transition-transform hover:-translate-y-0.5"
                           style={{ background: style.accent, boxShadow: `0 12px 24px -12px ${style.accent}` }}
                         >
-                          View architecture
+                          View solution
                           <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                         </a>
                       </div>

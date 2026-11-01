@@ -7,6 +7,8 @@ import { SERVICES_LIST } from '../../data/content';
 import { ServiceVisual } from './ServiceVisual';
 import { serviceIconMap, CATEGORY_LABEL } from './ServiceCard';
 import { lenisRef } from '../../lib/lenis';
+import { solutionsForService, solutionHref } from '../../data/solutions';
+import { navigate } from '../../lib/router';
 
 interface ServiceModalProps {
   service: ServiceItem | null;
@@ -243,6 +245,31 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({ service, onClose, on
                       ))}
                     </ul>
                   </div>
+
+                  {solutionsForService(service.id).length > 0 && (
+                    <div className="mt-7">
+                      <div className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#0B2545] mb-3">
+                        Part of these integrated solutions
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {solutionsForService(service.id).map((sol) => (
+                          <a
+                            key={sol.id}
+                            href={solutionHref(sol.id)}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              onClose();
+                              navigate(solutionHref(sol.id));
+                            }}
+                            className="group inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white ring-1 ring-[#0A8BD3]/20 text-[13px] font-semibold text-[#0866A8] hover:ring-[#0A8BD3]/50 hover:bg-[#F3F9FD] transition"
+                          >
+                            {sol.title}
+                            <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   <div className="mt-7 md:hidden">
                     <div className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#0B2545] mb-3">Technical standards</div>

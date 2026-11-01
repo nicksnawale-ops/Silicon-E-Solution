@@ -3,24 +3,24 @@ import { motion } from 'motion/react';
 import {
   ArrowRight,
   ArrowUpRight,
+  Briefcase,
   Building2,
-  Cable,
   ChevronRight,
   ClipboardCheck,
-  Flame,
+  GraduationCap,
   HeartPulse,
+  Landmark,
+  Layers,
   Network,
   PenTool,
-  PhoneCall,
   Server,
-  Shield,
   Sparkles,
-  Wifi,
   Wrench,
   ScanSearch,
 } from 'lucide-react';
 import { SERVICES_LIST, SHOWCASE_ITEMS } from '../data/content';
-import { ORDERED_SOLUTIONS, SOLUTION_DOMAINS, SOLUTION_SERVICE, SolutionDomain } from '../data/solutions';
+import { ORDERED_SOLUTIONS, SOLUTION_DOMAINS, SolutionDomain, servicesForSolution } from '../data/solutions';
+import { serviceIconMap } from '../components/ui/ServiceCard';
 import { ServiceItem } from '../types';
 import { ServiceVisual } from '../components/ui/ServiceVisual';
 import { CtaBand } from '../components/sections/CtaBand';
@@ -43,22 +43,19 @@ const reveal = (delay = 0) => ({
 });
 
 export const solutionIcons: Record<string, React.ElementType> = {
-  'networking-switches': Network,
-  'rf-wireless': Wifi,
-  'server-room': Server,
-  'passive-cabling-sol': Cable,
-  'security-system': Shield,
-  'fapa-system': Flame,
-  'nurse-calling': HeartPulse,
-  'bms-system': Building2,
-  'voice-solution': PhoneCall,
+  'smart-hospital': HeartPulse,
+  'smart-campus': GraduationCap,
+  'smart-office': Briefcase,
+  'intelligent-building': Building2,
+  'enterprise-datacentre': Server,
+  'secure-facility': Landmark,
 };
 
 const HERO_STATS = [
-  { value: '3.2 Tbps', label: 'Core switching' },
-  { value: 'Tier III', label: 'Datacentre design' },
-  { value: 'EN54', label: 'Life-safety standard' },
-  { value: '25 yr', label: 'Cabling warranty' },
+  { value: String(SHOWCASE_ITEMS.length), label: 'Integrated solutions' },
+  { value: String(SERVICES_LIST.length), label: 'Services combined' },
+  { value: '1', label: 'Accountable team' },
+  { value: 'PAN India', label: 'Execution' },
 ];
 
 const STANDARDS = [
@@ -99,7 +96,7 @@ const Blueprint: React.FC<{
   const item = SHOWCASE_ITEMS.find((s) => s.id === id);
   if (!item) return null;
   const Icon = solutionIcons[id] ?? Network;
-  const service = SERVICES_LIST.find((s) => s.id === SOLUTION_SERVICE[id]);
+  const services = servicesForSolution(id);
 
   return (
     <motion.article
@@ -135,13 +132,13 @@ const Blueprint: React.FC<{
           <div className="relative flex items-center justify-between">
             <span className="inline-flex items-center gap-2 font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-[#7FD3F7]">
               <span className="w-1.5 h-1.5 rounded-full bg-[#8DC63F] shadow-[0_0_10px_#8DC63F]" />
-              Architecture {pad(number)}
+              Solution {pad(number)}
             </span>
-            <span className="font-mono text-[10px] text-white/40">SYSTEM DIAGRAM</span>
+            <span className="font-mono text-[10px] text-white/40">{services.length} SERVICES · ONE SYSTEM</span>
           </div>
 
           <div className="relative mt-5 flex-1 flex flex-col rounded-[22px] p-[1px] bg-gradient-to-br from-[#4FC3F7]/50 via-white/10 to-[#8DC63F]/40">
-            <ServiceVisual serviceId={id} className="flex-1 h-full min-h-[200px] sm:min-h-[240px] rounded-[21px]" />
+            <ServiceVisual serviceId={item.visual} className="flex-1 h-full min-h-[200px] sm:min-h-[240px] rounded-[21px]" />
           </div>
 
           <div className="relative grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 pt-5">
@@ -169,8 +166,34 @@ const Blueprint: React.FC<{
             {item.title}
           </h3>
           <p className="mt-3 text-[15px] sm:text-base text-slate-600 leading-relaxed">{item.subtitle}</p>
+          <p className="mt-3 text-sm text-slate-500">
+            <span className="font-semibold text-[#0B2545]">Ideal for:</span> {item.idealFor}
+          </p>
 
-          <div className="mt-7 text-[11px] font-bold uppercase tracking-[0.16em] text-[#0B2545]/70">Architectural highlights</div>
+          <div className="mt-7 flex items-center justify-between gap-3">
+            <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#0B2545]/70">Integrated services</span>
+            <span className="text-[11px] text-slate-400">Tap for scope</span>
+          </div>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {services.map((svc) => {
+              const SvcIcon = serviceIconMap[svc.iconName] || Layers;
+              return (
+                <button
+                  key={svc.id}
+                  type="button"
+                  onClick={() => onSelectService(svc)}
+                  className="group inline-flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-full bg-white ring-1 ring-[#0A8BD3]/15 text-[13px] font-semibold text-[#0B2545] hover:ring-[#0A8BD3]/45 hover:text-[#0866A8] hover:-translate-y-0.5 transition-all cursor-pointer shadow-[0_6px_16px_-12px_rgba(11,37,69,0.45)]"
+                >
+                  <span className="w-6 h-6 rounded-full bg-[#E8F6FD] text-[#0A8BD3] flex items-center justify-center group-hover:bg-[#0A8BD3] group-hover:text-white transition-colors">
+                    <SvcIcon className="w-3.5 h-3.5" />
+                  </span>
+                  {svc.title}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="mt-7 text-[11px] font-bold uppercase tracking-[0.16em] text-[#0B2545]/70">How it comes together</div>
           <ol className="mt-3 space-y-3">
             {item.bullets.map((b, i) => (
               <li
@@ -189,19 +212,9 @@ const Blueprint: React.FC<{
               onClick={onOpenQuote}
               className="group inline-flex items-center gap-2 px-5 py-3 rounded-full bg-gradient-to-r from-[#0A8BD3] to-[#4FC3F7] text-white text-sm font-semibold shadow-[0_12px_28px_-10px_rgba(10,139,211,0.7)] hover:-translate-y-0.5 transition-transform cursor-pointer"
             >
-              Discuss this architecture
+              Discuss this solution
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
             </button>
-            {service && (
-              <button
-                type="button"
-                onClick={() => onSelectService(service)}
-                className="group inline-flex items-center gap-1.5 px-5 py-3 rounded-full bg-white ring-1 ring-[#0A8BD3]/25 text-sm font-semibold text-[#0A8BD3] hover:ring-[#0A8BD3]/50 hover:bg-[#F3F9FD] transition cursor-pointer"
-              >
-                Service scope
-                <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-              </button>
-            )}
           </div>
         </div>
       </div>
@@ -217,7 +230,7 @@ const DomainHeader: React.FC<{ domain: SolutionDomain; index: number }> = ({ dom
   <motion.div {...reveal()} className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
     <div>
       <div className="flex items-center gap-3">
-        <span className="font-mono text-xs font-bold text-[#0A8BD3]">DOMAIN {pad(index + 1)}</span>
+        <span className="font-mono text-xs font-bold text-[#0A8BD3]">SECTOR {pad(index + 1)}</span>
         <span className="h-px w-12 bg-gradient-to-r from-[#0A8BD3] to-[#8DC63F]" />
       </div>
       <h2 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-[#0B2545] font-display">
@@ -226,7 +239,7 @@ const DomainHeader: React.FC<{ domain: SolutionDomain; index: number }> = ({ dom
       <p className="mt-2 text-slate-600 text-sm sm:text-base">{domain.tagline}</p>
     </div>
     <span className="self-start sm:self-auto px-3.5 py-1.5 rounded-full bg-white ring-1 ring-[#0A8BD3]/15 text-xs font-semibold text-[#0B2545]">
-      {domain.solutionIds.length} architectures
+      {domain.solutionIds.length} solutions
     </span>
   </motion.div>
 );
@@ -302,20 +315,20 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({ onSelectService, o
             <div className="lg:col-span-6">
               <motion.div {...reveal()} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/80 ring-1 ring-[#0A8BD3]/15 text-xs font-semibold text-[#0A8BD3]">
                 <Sparkles className="w-3.5 h-3.5" />
-                {SHOWCASE_ITEMS.length} architectures · {SOLUTION_DOMAINS.length} engineering domains
+                {SHOWCASE_ITEMS.length} integrated solutions · {SERVICES_LIST.length} services · one accountable team
               </motion.div>
               <motion.h1
                 {...reveal(0.05)}
                 className="mt-5 text-3xl sm:text-4xl lg:text-[54px] lg:leading-[1.06] font-extrabold tracking-tight text-[#0B2545] font-display"
               >
-                Engineered architectures,{' '}
+                Many services.{' '}
                 <span className="bg-gradient-to-r from-[#0A8BD3] via-[#4FC3F7] to-[#8DC63F] bg-clip-text text-transparent">
-                  not just equipment.
+                  One integrated system.
                 </span>
               </motion.h1>
               <motion.p {...reveal(0.1)} className="mt-5 text-base sm:text-lg text-slate-600 leading-relaxed max-w-xl">
-                Explore the specifications, equipment topologies and failover redundancies behind every turnkey
-                installation we deliver — from core network fabrics to life-safety evacuation.
+                Our services are the building blocks. Our solutions bring them together — designed, installed and
+                commissioned as one coordinated system by a single team, with one point of accountability.
               </motion.p>
 
               <motion.div {...reveal(0.15)} className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-xl">
@@ -333,7 +346,7 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({ onSelectService, o
                   onClick={() => jump(ORDERED_SOLUTIONS[0].item.id)}
                   className="group inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-[#0A8BD3] to-[#4FC3F7] text-white text-sm font-semibold shadow-[0_12px_28px_-10px_rgba(10,139,211,0.7)] cursor-pointer"
                 >
-                  Explore architectures
+                  Explore solutions
                   <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
                 </button>
                 <button
@@ -370,9 +383,9 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({ onSelectService, o
                   <div className="relative flex items-center justify-between pb-4 border-b border-white/10">
                     <span className="inline-flex items-center gap-2 font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-[#7FD3F7]">
                       <span className="w-1.5 h-1.5 rounded-full bg-[#8DC63F] shadow-[0_0_10px_#8DC63F] animate-pulse" />
-                      Architecture index
+                      Solution index
                     </span>
-                    <span className="font-mono text-[10px] text-white/40">{pad(SHOWCASE_ITEMS.length)} SYSTEMS</span>
+                    <span className="font-mono text-[10px] text-white/40">{pad(SHOWCASE_ITEMS.length)} SOLUTIONS</span>
                   </div>
                   <div className="relative mt-4 space-y-4">
                     {SOLUTION_DOMAINS.map((d) => (
@@ -393,8 +406,8 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({ onSelectService, o
                                 <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-[#0A8BD3] to-[#4FC3F7] flex items-center justify-center shrink-0">
                                   <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                 </span>
-                                <span className="min-w-0 flex-1 text-xs sm:text-[13px] font-semibold leading-tight text-white/90 group-hover:text-white truncate">
-                                  {it.highlight}
+                                <span className="min-w-0 flex-1 text-xs sm:text-[13px] font-semibold leading-tight text-white/90 group-hover:text-white">
+                                  {it.title}
                                 </span>
                                 <ArrowUpRight className="hidden sm:block w-3.5 h-3.5 text-[#7FD3F7]/60 shrink-0 transition group-hover:text-[#7FD3F7] group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                               </button>
@@ -486,7 +499,7 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({ onSelectService, o
           <motion.div {...reveal()} className="max-w-2xl">
             <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[#0A8BD3]">How we deliver</div>
             <h2 className="mt-2 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-[#0B2545] font-display">
-              Every architecture, built to standard.
+              Every solution, built to standard.
             </h2>
             <p className="mt-3 text-slate-600 text-sm sm:text-base leading-relaxed">
               One accountable team from first survey to certified handover — designed against recognised international

@@ -1,58 +1,49 @@
-import { SHOWCASE_ITEMS } from './content';
+import { SHOWCASE_ITEMS, SERVICES_LIST } from './content';
 
 /**
- * Solution architectures (detail in SHOWCASE_ITEMS) grouped into engineering
- * domains for the /solutions page and the home-page teaser.
+ * Integrated solutions (detail in SHOWCASE_ITEMS) grouped by the kind of
+ * client they serve, for the /solutions page and the home-page explorer.
  */
-export type SolutionDomainId = 'network' | 'safety' | 'building';
+export type SolutionDomainId = 'care' | 'workplace' | 'critical';
 
 export interface SolutionDomain {
   id: SolutionDomainId;
   name: string;
   tagline: string;
-  /** ServiceVisual scene used to represent the domain. */
-  visual: string;
   solutionIds: string[];
 }
 
 export const SOLUTION_DOMAINS: SolutionDomain[] = [
   {
-    id: 'network',
-    name: 'Network & Compute',
-    tagline: 'Core fabrics, campus wireless, datacentres and certified cabling.',
-    visual: 'networking',
-    solutionIds: ['networking-switches', 'rf-wireless', 'server-room', 'passive-cabling-sol'],
+    id: 'care',
+    name: 'Healthcare & Education',
+    tagline: 'Hospitals, medical colleges and campuses where safety and learning cannot stop.',
+    solutionIds: ['smart-hospital', 'smart-campus'],
   },
   {
-    id: 'safety',
-    name: 'Safety & Security',
-    tagline: 'Surveillance, life-safety evacuation and clinical response systems.',
-    visual: 'security-systems',
-    solutionIds: ['security-system', 'fapa-system', 'nurse-calling'],
+    id: 'workplace',
+    name: 'Workplace & Commercial',
+    tagline: 'Offices and buildings that run on one intelligent infrastructure.',
+    solutionIds: ['smart-office', 'intelligent-building'],
   },
   {
-    id: 'building',
-    name: 'Building & Communication',
-    tagline: 'Intelligent automation and unified enterprise voice.',
-    visual: 'bms',
-    solutionIds: ['bms-system', 'voice-solution'],
+    id: 'critical',
+    name: 'Mission-Critical',
+    tagline: 'Datacentres and public facilities engineered for uptime and security.',
+    solutionIds: ['enterprise-datacentre', 'secure-facility'],
   },
 ];
 
-/** Matching service (SERVICES_LIST id) for each solution, used for the detail popup. */
-export const SOLUTION_SERVICE: Record<string, string> = {
-  'networking-switches': 'networking',
-  'rf-wireless': 'wireless',
-  'server-room': 'datacentre',
-  'security-system': 'security-systems',
-  'voice-solution': 'voice-solutions',
-  'fapa-system': 'evacuation-fapa',
-  'bms-system': 'bms',
-  'nurse-calling': 'nurse-call',
-  'passive-cabling-sol': 'passive-cabling',
-};
-
 export const solutionById = (id: string) => SHOWCASE_ITEMS.find((s) => s.id === id);
+
+/** Services an integrated solution combines, in display order. */
+export const servicesForSolution = (id: string) =>
+  (solutionById(id)?.serviceIds ?? [])
+    .map((sid) => SERVICES_LIST.find((s) => s.id === sid))
+    .filter((s): s is (typeof SERVICES_LIST)[number] => Boolean(s));
+
+/** Solutions that include a given service (for cross-links from service popups). */
+export const solutionsForService = (serviceId: string) => SHOWCASE_ITEMS.filter((s) => s.serviceIds.includes(serviceId));
 
 /** Solutions in page order (grouped by domain). */
 export const ORDERED_SOLUTIONS = SOLUTION_DOMAINS.flatMap((d) =>
