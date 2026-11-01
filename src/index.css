@@ -306,3 +306,16 @@ section, [id] {
 .sv-stage--light [fill='rgba(255,255,255,0.55)'],
 .sv-stage--light [fill='rgba(255,255,255,0.7)'] { fill: rgba(11, 37, 69, 0.38); }
 .sv-stage--light [fill='#E9EEF3'] { fill: #9FB3C8; }
+
+/* Premium CTA panel: slow drifting light + rotating border sheen. */
+@keyframes cta-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(6%, -8%, 0) scale(1.12); }
+}
+@keyframes cta-spin { to { transform: rotate(360deg); } }
+.cta-drift { animation: cta-drift 14s ease-in-out infinite; }
+.cta-drift--slow { animation-duration: 20s; animation-direction: reverse; }
+.cta-spin { animation: cta-spin 9s linear infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .cta-drift, .cta-spin { animation: none; }
+}
