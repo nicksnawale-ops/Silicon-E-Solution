@@ -95,7 +95,7 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onSelectService, onO
 
       {/* Filters + grid */}
       <section id="services" className="relative pb-20 lg:pb-28 surface-ice surface-ice--dots">
-        <div className="sticky top-16 z-30 py-3 mb-8 backdrop-blur-xl bg-[#E4EFF8]/75 border-y border-[#0A8BD3]/10">
+        <div className="sticky-tabbar sticky top-16 z-30 py-3 mb-8 border-y border-[#0A8BD3]/10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
             <div role="tablist" aria-label="Filter services" className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
               {FILTERS.map((f) => {
