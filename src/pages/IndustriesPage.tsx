@@ -366,7 +366,7 @@ export const IndustriesPage: React.FC<IndustriesPageProps> = ({ onSelectService,
       </section>
 
       {/* ================= Sticky sector bar ================= */}
-      <div className="sticky top-16 z-30 py-3 backdrop-blur-xl bg-[#E4EFF8]/80 border-y border-[#0A8BD3]/10">
+      <div className="sticky-tabbar sticky top-16 z-30 py-3 border-y border-[#0A8BD3]/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
           <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
             {INDUSTRIES.map((ind) => {

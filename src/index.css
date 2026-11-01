@@ -333,3 +333,22 @@ section, [id] {
 @media (prefers-reduced-motion: reduce) {
   .conn-drop, .conn-ring { animation: none; opacity: 0; }
 }
+
+/* Sticky filter / index bars (Services, Industries, Solutions).
+   Touch devices: solid background on its own compositing layer — a second
+   backdrop-filter stacked under the blurred navbar flickers in iOS Safari while
+   animated content scrolls beneath it. Mouse devices keep the frosted glass. */
+.sticky-tabbar {
+  background-color: rgba(228, 239, 248, 0.98);
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+@media (hover: hover) and (pointer: fine) {
+  .sticky-tabbar {
+    background-color: rgba(228, 239, 248, 0.8);
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
+  }
+}
