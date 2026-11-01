@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronRight, Layers, ShieldCheck, Award, MapPin } from 'lucide-react';
+import { ChevronRight, Layers, ShieldCheck, Award, MapPin, Sparkles, ArrowRight } from 'lucide-react';
 import { SERVICES_LIST } from '../data/content';
 import { ServiceItem } from '../types';
 import { ServiceCard, CATEGORY_LABEL } from '../components/ui/ServiceCard';
@@ -27,6 +27,10 @@ const FACTS = [
   { icon: ShieldCheck, value: 'SITC', label: 'Design to handover' },
   { icon: MapPin, value: 'PAN India', label: 'Project execution' },
 ];
+
+/** Column span for the custom tile so it fills the remainder of the last row. */
+const MD_SPAN = ['md:col-span-2', 'md:col-span-1'];
+const LG_SPAN = ['lg:col-span-3', 'lg:col-span-2', 'lg:col-span-1'];
 
 export const ServicesPage: React.FC<ServicesPageProps> = ({ onSelectService, onOpenQuote }) => {
   const [filter, setFilter] = useState<Filter>('all');
@@ -141,6 +145,41 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onSelectService, onO
               {visible.map((service, i) => (
                 <ServiceCard key={service.id} service={service} onSelect={onSelectService} index={i} />
               ))}
+              {/* Custom-requirement tile: fills the rest of the last row so the grid never ends ragged. */}
+              <motion.div
+                key={`custom-${filter}`}
+                layout
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                className={`${MD_SPAN[visible.length % 2]} ${LG_SPAN[visible.length % 3]} relative rounded-[28px] p-[1.5px] bg-gradient-to-br from-[#4FC3F7]/60 via-white to-[#8DC63F]/50`}
+              >
+                <div className="@container relative h-full overflow-hidden rounded-[26.5px] bg-gradient-to-br from-white via-[#F4FAFE] to-[#EEF7E2] p-7 sm:p-8 flex flex-col justify-center">
+                  <div aria-hidden="true" className="absolute -right-16 -top-16 w-56 h-56 rounded-full bg-[radial-gradient(closest-side,rgba(79,195,247,0.22),transparent)]" />
+                  <div aria-hidden="true" className="absolute -left-10 -bottom-16 w-48 h-48 rounded-full bg-[radial-gradient(closest-side,rgba(141,198,63,0.2),transparent)]" />
+                  <div className="relative flex flex-col @xl:flex-row @xl:items-center gap-5 @xl:gap-7">
+                    <span className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#0A8BD3] to-[#8DC63F] text-white flex items-center justify-center shrink-0 shadow-[0_14px_30px_-12px_rgba(10,139,211,0.7)]">
+                      <Sparkles className="w-6 h-6" />
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[#0A8BD3]">Custom requirement?</div>
+                      <h3 className="mt-1.5 text-xl font-extrabold tracking-tight text-[#0B2545] font-display">Need something beyond this list?</h3>
+                      <p className="mt-1.5 text-sm text-slate-600 leading-relaxed max-w-xl">
+                        Our engineers design bespoke ELV, IT and AV systems around your site, standards and budget.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={onOpenQuote}
+                      className="group self-start @xl:self-auto shrink-0 inline-flex items-center gap-2 px-5 py-3 rounded-full bg-gradient-to-r from-[#0A8BD3] to-[#4FC3F7] text-white text-sm font-semibold shadow-[0_12px_28px_-10px_rgba(10,139,211,0.7)] hover:-translate-y-0.5 transition-transform cursor-pointer"
+                    >
+                      Discuss a project
+                      <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
             </AnimatePresence>
           </motion.div>
         </div>

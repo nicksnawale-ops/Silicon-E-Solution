@@ -2,14 +2,14 @@ import React from 'react';
 import { motion } from 'motion/react';
 import {
   Network, Wifi, Server, Shield, MonitorPlay, Lock, PhoneCall, Flame, Building2,
-  Activity, Users, Cpu, Layers, Zap, Sun, ArrowUpRight,
+  Activity, Users, Cpu, Layers, Zap, Sun, Lightbulb, ArrowUpRight,
 } from 'lucide-react';
 import { ServiceItem } from '../../types';
 import { ServiceVisual } from './ServiceVisual';
 
 export const serviceIconMap: Record<string, React.ElementType> = {
   Network, Wifi, Server, Shield, MonitorPlay, Lock, PhoneCall, Flame, Building2,
-  Activity, Users, Cpu, Layers, Zap, Sun,
+  Activity, Users, Cpu, Layers, Zap, Sun, Lightbulb,
 };
 
 export const CATEGORY_LABEL: Record<ServiceItem['category'], string> = {

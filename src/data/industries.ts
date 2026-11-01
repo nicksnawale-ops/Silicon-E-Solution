@@ -79,7 +79,7 @@ export const INDUSTRIES: Industry[] = [
       'From structured cabling at construction stage to BMS, power, lighting automation and collaboration rooms — one partner from blueprint to handover.',
     icon: 'Building2',
     tags: ['BMS', 'Structured cabling', 'Power & UPS'],
-    serviceIds: ['bms', 'passive-cabling', 'cable-management', 'power-solutions', 'lighting-automation', 'conference-solutions'],
+    serviceIds: ['bms', 'passive-cabling', 'cable-management', 'power-solutions', 'lighting-automation', 'rftp-dc-lighting', 'conference-solutions'],
     clients: ['Anibrain Studio'],
     visual: 'bms',
   },
