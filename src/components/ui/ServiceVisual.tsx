@@ -509,12 +509,15 @@ const ALIASES: Record<string, string> = {
   'passive-cabling-sol': 'passive-cabling',
 };
 
-export const ServiceVisual: React.FC<{ serviceId: string; className?: string; showLabel?: boolean; paused?: boolean }> = ({
-  serviceId,
-  className = '',
-  showLabel = true,
-  paused = false,
-}) => {
+export const ServiceVisual: React.FC<{
+  serviceId: string;
+  className?: string;
+  showLabel?: boolean;
+  paused?: boolean;
+  /** 'light' renders the same scene on a white blueprint stage. */
+  tone?: 'dark' | 'light';
+}> = ({ serviceId, className = '', showLabel = true, paused = false, tone = 'dark' }) => {
+  const light = tone === 'light';
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   const scene = SCENES[ALIASES[serviceId] ?? serviceId] ?? SCENES.networking;
@@ -534,7 +537,7 @@ export const ServiceVisual: React.FC<{ serviceId: string; className?: string; sh
     <div
       ref={ref}
       data-paused={visible && !paused ? 'false' : 'true'}
-      className={`sv-stage relative overflow-hidden isolate ${className}`}
+      className={`sv-stage ${light ? 'sv-stage--light' : ''} relative overflow-hidden isolate ${className}`}
       aria-hidden="true"
     >
       <div className={`absolute inset-0 ${showLabel ? 'pt-6 pb-8 px-4' : 'p-4'}`}>
@@ -544,17 +547,17 @@ export const ServiceVisual: React.FC<{ serviceId: string; className?: string; sh
       </div>
       {showLabel && (
         <>
-          <span className="absolute left-3 bottom-2.5 text-[10px] font-mono font-semibold uppercase tracking-[0.12em] text-[#7FD3F7]/90">
+          <span className={`absolute left-3 bottom-2.5 text-[10px] font-mono font-semibold uppercase tracking-[0.12em] ${light ? 'text-[#0A8BD3]' : 'text-[#7FD3F7]/90'}`}>
             {scene.label}
           </span>
-          <span className="absolute right-3 top-2.5 inline-flex items-center gap-1.5 text-[9px] font-mono font-semibold uppercase tracking-[0.14em] text-white/55">
+          <span className={`absolute right-3 top-2.5 inline-flex items-center gap-1.5 text-[9px] font-mono font-semibold uppercase tracking-[0.14em] ${light ? 'text-slate-500' : 'text-white/55'}`}>
             <span className="w-1.5 h-1.5 rounded-full bg-[#8DC63F] shadow-[0_0_6px_#8DC63F] sv-blink" />
             Live
           </span>
         </>
       )}
       {/* Glass reflection */}
-      <span className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.06] via-transparent to-transparent" />
+      {!light && <span className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.06] via-transparent to-transparent" />}
     </div>
   );
 };
