@@ -506,150 +506,130 @@ export const EDUCATION_SECTION = {
   ],
 };
 
+/**
+ * Integrated solutions: each combines several services (SERVICES_LIST) into one
+ * engineered, turnkey system delivered by a single accountable team.
+ */
 export const SHOWCASE_ITEMS: SolutionShowcaseItem[] = [
   {
-    id: 'networking-switches',
-    title: 'Networking Switches & Core Routing',
-    subtitle: 'Layer 3 & Layer 2 high-density fabrics with intelligent load balancers.',
+    id: 'smart-hospital',
+    title: 'Smart Hospital ELV',
+    highlight: 'Healthcare',
+    idealFor: 'Super-speciality hospitals & medical colleges',
+    subtitle:
+      'One integrated ELV backbone for patient safety, clinical response and zero-downtime operation — from nurse call to fire evacuation.',
     bullets: [
-      'Wire-speed 10G/40G backplane architecture with zero packet loss under peak broadcast loads.',
-      'Hardware-assisted ACLs and micro-segmentation preventing lateral malware propagation.',
-      'Network Load Balancers distributing mission-critical enterprise traffic across redundant ISPs.',
+      'Nurse call, FA-PA evacuation, CCTV and BMS engineered as one coordinated system — not separate vendors.',
+      'Segregated clinical network and campus Wi-Fi carrying telemetry carts, VoIP handsets and EHR traffic.',
+      'Single design, single installation team and single point of accountability from blueprint to handover.',
     ],
     specs: [
-      { label: 'Switching Capacity', value: 'Up to 3.2 Tbps' },
-      { label: 'Protocols', value: 'OSPF, BGP, VRRP, LACP' },
-      { label: 'Redundancy', value: 'Dual Hot-Swap PSUs' },
+      { label: 'Nurse Call', value: 'HTM 08-03' },
+      { label: 'Life Safety', value: 'EN54 / NFPA 72' },
+      { label: 'Cabling', value: '100% Fluke Certified' },
     ],
-    highlight: 'Core Networking',
+    serviceIds: ['nurse-call', 'evacuation-fapa', 'security-systems', 'wireless', 'bms', 'passive-cabling'],
+    visual: 'nurse-call',
   },
   {
-    id: 'rf-wireless',
-    title: 'RF Management & Wireless Solutions',
-    subtitle: 'Enterprise Wi-Fi 6, campus hotspots, and long-distance Point-to-Point backhauls.',
+    id: 'smart-campus',
+    title: 'Smart Campus & Medical College',
+    highlight: 'Education',
+    idealFor: 'Universities, medical colleges & lecture theatres',
+    subtitle:
+      'Connected teaching spaces across the campus — AV-rich lecture halls, seminar rooms and campus-wide wireless on one network.',
     bullets: [
-      'Predictive 3D RF heatmapping ensuring uniform signal coverage even through concrete hospital walls.',
-      'Seamless 802.11r/k fast roaming for mobile medical telemetry carts and VoIP handsets.',
-      'Carrier-grade Point-to-Point RF links bridging separate campus buildings without trenching costs.',
+      'Lecture theatres and demo rooms with projection, video walls, line-array audio and lecture capture.',
+      'High-density campus Wi-Fi and core switching sized for thousands of concurrent student devices.',
+      'Seminar and boardroom collaboration plus voice evacuation, integrated and centrally managed.',
     ],
     specs: [
-      { label: 'Link Distance', value: 'Up to 25 km PtP' },
-      { label: 'Client Density', value: '1,000+ per AP' },
-      { label: 'Security', value: 'WPA3 Enterprise + 802.1X' },
+      { label: 'Wireless', value: 'Wi-Fi 6/6E Campus' },
+      { label: 'AV', value: '4K Video Walls' },
+      { label: 'Core', value: '10G/40G Backbone' },
     ],
-    highlight: 'Wireless & RF',
+    serviceIds: ['av-solutions', 'conference-solutions', 'wireless', 'networking', 'evacuation-fapa'],
+    visual: 'av-solutions',
   },
   {
-    id: 'server-room',
-    title: 'Server Room & Datacentre Infrastructure',
-    subtitle: 'Enterprise storage, disaster recovery, precision cooling, and containment.',
+    id: 'smart-office',
+    title: 'Smart Office & Corporate Workplace',
+    highlight: 'Workplace',
+    idealFor: 'Corporate offices, IT parks & headquarters',
+    subtitle:
+      'A modern workplace that runs on one intelligent infrastructure — single-cable DC lighting, automation, collaboration and secure connectivity.',
     bullets: [
-      'Modular server racks engineered with optimized thermal paths and intelligent cable conduits.',
-      'High-IOPS all-flash enterprise SAN storage for electronic health records and ERP databases.',
-      'Automated disaster recovery replication with cold-site and warm-site failover workflows.',
+      'RFTP DC lighting and BMS managing every light, mode and HVAC setpoint from one system.',
+      'Meeting rooms with 4K video conferencing, beamforming microphones and wireless presentation.',
+      'Enterprise networking, IP-PBX voice and access-controlled security delivered as one project.',
     ],
     specs: [
-      { label: 'Storage Latency', value: '< 0.5 ms IOPS' },
+      { label: 'Lighting', value: 'Single-Cable DC' },
+      { label: 'Automation', value: 'BACnet IP' },
+      { label: 'Voice', value: 'Opus & G.722 HD' },
+    ],
+    serviceIds: ['rftp-dc-lighting', 'bms', 'conference-solutions', 'networking', 'voice-solutions', 'security-systems'],
+    visual: 'rftp-dc-lighting',
+  },
+  {
+    id: 'intelligent-building',
+    title: 'Intelligent Building Infrastructure',
+    highlight: 'Commercial & Construction',
+    idealFor: 'Grade-A commercial buildings & new construction',
+    subtitle:
+      'Future-ready building infrastructure designed at construction stage — cabling, containment, power and automation in one plan.',
+    bullets: [
+      'Structured cabling and cable containment designed alongside civil and MEP drawings from day one.',
+      'Building management, lighting automation and metered power for energy-efficient operation.',
+      'Voice and data services ready for tenants at handover, fully tested and documented.',
+    ],
+    specs: [
+      { label: 'Cabling Warranty', value: '25-Year Performance' },
+      { label: 'Efficiency Gain', value: '25% - 40% Energy' },
+      { label: 'Power', value: 'Modular N+1 UPS' },
+    ],
+    serviceIds: ['passive-cabling', 'cable-management', 'bms', 'lighting-automation', 'power-solutions', 'voice-solutions'],
+    visual: 'bms',
+  },
+  {
+    id: 'enterprise-datacentre',
+    title: 'Enterprise Datacentre & Server Room',
+    highlight: 'Mission-Critical',
+    idealFor: 'Enterprises, hospitals & institutions running critical IT',
+    subtitle:
+      'A complete, resilient compute environment — racks, storage, power, cooling, cabling and security engineered for continuous uptime.',
+    bullets: [
+      'Server racks, enterprise storage and disaster-recovery replication with hot/cold aisle containment.',
+      'Modular N+1 UPS and smart PDUs with zero-transfer-time power protection.',
+      'Certified fibre and copper backbones, organised containment and next-gen firewall protection.',
+    ],
+    specs: [
       { label: 'Uptime Tier', value: 'Tier III Compliant' },
-      { label: 'Cooling Design', value: 'Hot/Cold Aisle' },
+      { label: 'Transfer Time', value: '0 ms UPS' },
+      { label: 'Storage Latency', value: '< 0.5 ms IOPS' },
     ],
-    highlight: 'Datacentre',
+    serviceIds: ['datacentre', 'power-solutions', 'networking', 'passive-cabling', 'cable-management', 'endpoint-security'],
+    visual: 'datacentre',
   },
   {
-    id: 'security-system',
-    title: 'Integrated Physical Security Systems',
-    subtitle: 'CCTV surveillance, UVSS vehicle scanners, boom barriers, and access control.',
+    id: 'secure-facility',
+    title: 'Secure Government & Public Facility',
+    highlight: 'Government & Defence',
+    idealFor: 'Government offices, public institutions & defence sites',
+    subtitle:
+      'Hardened, auditable infrastructure for public institutions — surveillance, perimeter security, secure networks and life safety.',
     bullets: [
-      'Deep learning video analytics for perimeter intrusion, unattended bag alerts, and line-crossing.',
-      'Under-Vehicle Surveillance Systems (UVSS) providing automated color scans of vehicle chassis.',
-      'Heavy-duty commercial boom barriers with loop detectors and high-speed opening cycles.',
+      'AI video analytics, ANPR, UVSS and boom barriers securing perimeters and entry points.',
+      'Next-gen firewalls, zero-trust access and secure datacentres protecting sensitive data.',
+      'Life-safety evacuation and protected power keeping critical services running.',
     ],
     specs: [
       { label: 'Video Analytics', value: 'AI Face & ANPR' },
-      { label: 'Barrier Cycle', value: '1.2s Fast Pass' },
-      { label: 'Sensor Protection', value: 'IP68 Submersible' },
+      { label: 'Network Security', value: 'NGFW · Zero Trust' },
+      { label: 'Life Safety', value: 'EN54 / NFPA 72' },
     ],
-    highlight: 'Physical Security',
-  },
-  {
-    id: 'voice-solution',
-    title: 'IP-PBX & Unified Voice Telephony',
-    subtitle: 'Enterprise telephone exchanges, VoIP SIP trunks, and executive IP phones.',
-    bullets: [
-      'Centralized IP-PBX supporting thousands of extensions across multiple remote branch campuses.',
-      'Integrated IVR auto-attendants routing customer and patient inquiries effortlessly.',
-      'Built-in call recording, voicemail-to-email dispatch, and mobile softphone twinning.',
-    ],
-    specs: [
-      { label: 'Extensions', value: '10 to 10,000+' },
-      { label: 'Audio Quality', value: 'Opus & G.722 HD' },
-      { label: 'Encryption', value: 'TLS & SRTP' },
-    ],
-    highlight: 'Voice & UC',
-  },
-  {
-    id: 'fapa-system',
-    title: 'Integrated FA-PA Life Safety System',
-    subtitle: 'Addressable fire detection married with intelligent public address evacuation.',
-    bullets: [
-      'Microprocessor-based addressable loop controllers locating hazards to the exact room coordinate.',
-      'Automatic fire-triggered override silencing ambient music to deliver calm, clear evacuation directives.',
-      'Battery-backed emergency power sustaining operational broadcast during mains electricity cutoff.',
-    ],
-    specs: [
-      { label: 'Standards', value: 'EN54 / NFPA 72' },
-      { label: 'Loop Capacity', value: '254 Devices / Loop' },
-      { label: 'PA Intelligibility', value: 'STI > 0.65' },
-    ],
-    highlight: 'Life Safety',
-  },
-  {
-    id: 'bms-system',
-    title: 'Building Management System (BMS)',
-    subtitle: 'Comprehensive automation for HVAC, Genset, electrical distribution, and energy.',
-    bullets: [
-      'Single-pane-of-glass SCADA visualization monitoring energy meters, water levels, and temperatures.',
-      'Smart HVAC control algorithms adjusting setpoints dynamically based on indoor carbon dioxide levels.',
-      'Instant SMS/Email alerts dispatched to facility managers whenever genset or power anomalies occur.',
-    ],
-    specs: [
-      { label: 'Protocols', value: 'BACnet IP, Modbus, MQTT' },
-      { label: 'Sensors Logged', value: '50,000+ Points' },
-      { label: 'Efficiency Gain', value: '25% - 40% Energy' },
-    ],
-    highlight: 'Building Automation',
-  },
-  {
-    id: 'nurse-calling',
-    title: 'Medical Nurse Call System',
-    subtitle: 'Ergonomic patient handsets, over-door corridor indicators, and master consoles.',
-    bullets: [
-      'Waterproof silicone patient handsets with antimicrobial coatings preventing clinical cross-contamination.',
-      'Multi-tiered priority escalations: routine nurse call, toilet emergency pull, and Code Blue emergency.',
-      'Detailed audit trails logging patient call response times for clinical quality accreditation.',
-    ],
-    specs: [
-      { label: 'Standard', value: 'HTM 08-03' },
-      { label: 'Response Logging', value: 'Millisecond Timestamped' },
-      { label: 'Cabling', value: 'Cat6 Plug & Play' },
-    ],
-    highlight: 'Healthcare Systems',
-  },
-  {
-    id: 'passive-cabling-sol',
-    title: 'Passive Infrastructure & OFC Cabling',
-    subtitle: 'Certified structured cabling, optical fiber fusion splicing, and server racks.',
-    bullets: [
-      'Armored fiber backbones connecting disparate blocks with zero outdoor interference or rodent damage.',
-      'Certified Category 6A copper channels with full Fluke DTX/DSX printed test reports.',
-      'High-grade ventilated telecom racks with organized raceways and precision patch cord labeling.',
-    ],
-    specs: [
-      { label: 'Warranty', value: '25-Year Performance' },
-      { label: 'Fiber Types', value: 'OS2, OM3, OM4' },
-      { label: 'Testing', value: '100% Fluke Certified' },
-    ],
-    highlight: 'Passive Infrastructure',
+    serviceIds: ['security-systems', 'endpoint-security', 'datacentre', 'networking', 'evacuation-fapa', 'power-solutions'],
+    visual: 'security-systems',
   },
 ];
 

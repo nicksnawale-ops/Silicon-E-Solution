@@ -55,4 +55,10 @@ export interface SolutionShowcaseItem {
   bullets: string[];
   specs: { label: string; value: string }[];
   highlight: string;
+  /** Services (SERVICES_LIST ids) this integrated solution combines. */
+  serviceIds: string[];
+  /** ServiceVisual scene used to illustrate the solution. */
+  visual: string;
+  /** Who it's for, e.g. "Super-speciality hospitals & medical colleges". */
+  idealFor: string;
 }
