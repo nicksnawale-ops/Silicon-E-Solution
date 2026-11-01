@@ -28,6 +28,7 @@ import {
   Layers,
   Zap,
   Sun,
+  Lightbulb,
   Heart,
   GraduationCap,
   Briefcase,
@@ -60,6 +61,7 @@ const serviceIcons: Record<string, React.ElementType> = {
   Layers,
   Zap,
   Sun,
+  Lightbulb,
 };
 
 type DropdownKey = 'services' | 'industries' | 'company';

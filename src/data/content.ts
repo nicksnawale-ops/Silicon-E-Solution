@@ -386,6 +386,24 @@ export const SERVICES_LIST: ServiceItem[] = [
     iconName: 'Sun',
     colSpan: 'normal',
   },
+  {
+    id: 'rftp-dc-lighting',
+    number: '16',
+    title: 'RFTP DC Lighting Solutions',
+    category: 'infrastructure',
+    shortDesc: 'Low-voltage DC lighting powered and controlled over a single cable — every light, one system.',
+    fullDesc:
+      'Centralised DC lighting where a single RFTP cable carries both power and control to every luminaire. Manage the lighting of an entire office or building from one system, switch light modes and scenes instantly, lower power consumption and reduce fire risk compared with conventional mains wiring.',
+    features: [
+      'Power & Control Over a Single RFTP Cable to Every Luminaire',
+      'Centralised Management of Entire Office & Building Lighting',
+      'Instant Light Modes, Scenes, Dimming & Scheduling',
+      'Low-Voltage DC Distribution for Lower Fire Risk & Power Use',
+    ],
+    specs: ['Single-Cable Power + Control', 'Low-Power DC', 'Reduced Fire Risk'],
+    iconName: 'Lightbulb',
+    colSpan: 'normal',
+  },
 ];
 
 export const HEALTHCARE_SECTION = {

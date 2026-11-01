@@ -478,6 +478,45 @@ const Lighting = () => (
   </>
 );
 
+/** RFTP DC lighting: one DC hub, one cable carrying power + control, lights cycling modes. */
+const DcLighting = () => {
+  const lights = [104, 158, 212, 266];
+  const modes = [C.amber, '#FFFFFF', C.cyan];
+  return (
+    <>
+      {/* DC power & control hub */}
+      <rect x={18} y={46} width={54} height={46} rx={7} fill="#0E3A66" stroke={C.cyan} strokeWidth={1.5} />
+      <path d="M 47 54 L 39 70 L 46 70 L 42 84 L 54 64 L 47 64 L 51 54 Z" fill={C.lime} className="sv-blink" style={seq(0, 2.2)} />
+      <rect x={26} y={86} width={38} height={2} rx={1} fill={C.dim} />
+      {/* The single RFTP cable */}
+      <path d="M 72 69 H 92 V 24 H 300" fill="none" stroke={C.edge} strokeWidth={2.2} />
+      <path d="M 72 69 H 92 V 24 H 300" fill="none" stroke={C.cyan} strokeWidth={1.2} strokeDasharray="4 10"
+        className="sv-dash" style={{ '--dash': '-28', '--d': '1s' } as V} />
+      {lights.map((x, i) => (
+        <g key={x}>
+          <line x1={x} y1={24} x2={x} y2={38} stroke={C.dim} />
+          <rect x={x - 16} y={38} width={32} height={7} rx={3.5} fill="#0E3A66" stroke={C.edge} />
+          {modes.map((m, k) => (
+            <React.Fragment key={k}>
+              <path d={`M ${x - 12} 46 L ${x - 22} 108 L ${x + 22} 108 L ${x + 12} 46 Z`} fill={m} opacity={0.14}
+                className="sv-seq" style={seq(i * 0.25 + k * 2, 6)} />
+              <rect x={x - 13} y={44} width={26} height={2.5} rx={1.2} fill={m}
+                className="sv-seq" style={seq(i * 0.25 + k * 2, 6)} />
+            </React.Fragment>
+          ))}
+        </g>
+      ))}
+      {/* Mode selector: warm · cool · dim */}
+      {modes.map((m, k) => (
+        <g key={k}>
+          <circle cx={128 + k * 34} cy={126} r={4.5} fill={m} className="sv-seq" style={seq(k * 2, 6)} />
+          <circle cx={128 + k * 34} cy={126} r={7.5} fill="none" stroke={C.dim} />
+        </g>
+      ))}
+    </>
+  );
+};
+
 const SCENES: Record<string, { label: string; render: () => React.ReactNode }> = {
   networking: { label: '10G L3 Fabric', render: Networking },
   wireless: { label: 'Wi-Fi 6E Campus Mesh', render: Wireless },
@@ -493,6 +532,7 @@ const SCENES: Record<string, { label: string; render: () => React.ReactNode }> =
   'passive-cabling': { label: 'OFC · Cat6A · Fluke', render: PassiveCabling },
   'cable-management': { label: 'Trays · Raceways · CMS', render: CableManagement },
   'power-solutions': { label: 'Modular UPS · Smart PDU', render: Power },
+  'rftp-dc-lighting': { label: 'Single-Cable DC · Low Voltage', render: DcLighting },
   'lighting-automation': { label: 'DALI Scene Control', render: Lighting },
 };
 
