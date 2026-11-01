@@ -249,7 +249,7 @@ export const IndustriesPage: React.FC<IndustriesPageProps> = ({ onSelectService,
 
   useEffect(() => {
     const prev = document.title;
-    document.title = 'Industries | Silicon e Solution — Healthcare, Education, Government & Commercial';
+    document.title = 'Industries | Silicon é Solution — Healthcare, Education, Government & Commercial';
     return () => {
       document.title = prev;
     };

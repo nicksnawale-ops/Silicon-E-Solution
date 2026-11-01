@@ -241,7 +241,7 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({ onSelectService, o
 
   useEffect(() => {
     const prev = document.title;
-    document.title = 'Solutions | Silicon e Solution — Engineered IT & ELV Architectures';
+    document.title = 'Solutions | Silicon é Solution — Engineered IT & ELV Architectures';
     return () => {
       document.title = prev;
     };

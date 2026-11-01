@@ -101,7 +101,7 @@ const SectionHeader: React.FC<{ eyebrow: string; title: string; sub?: string; ce
 export const AboutPage: React.FC<AboutPageProps> = ({ onOpenQuote }) => {
   useEffect(() => {
     const prev = document.title;
-    document.title = 'About Us | Silicon e Solution — IT Infrastructure Solution Provider, Pune';
+    document.title = 'About Us | Silicon é Solution — IT Infrastructure Solution Provider, Pune';
     return () => {
       document.title = prev;
     };
@@ -417,7 +417,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenQuote }) => {
             </div>
             <div className="relative min-h-[280px] bg-[#E4EFF8]">
               <iframe
-                title="Silicon e Solution office location, Bavdhan, Pune"
+                title="Silicon é Solution office location, Bavdhan, Pune"
                 src={COMPANY_INFO.mapEmbedUrl}
                 className="absolute inset-0 w-full h-full border-0 grayscale-[30%]"
                 loading="lazy"
