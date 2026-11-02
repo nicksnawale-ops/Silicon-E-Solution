@@ -3,6 +3,7 @@ import { lenisRef } from '../../lib/lenis';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, CheckCircle2, Send, Phone, Mail, Building, MapPin } from 'lucide-react';
 import { SERVICES_LIST, COMPANY_INFO } from '../../data/content';
+import { sendEnquiry } from '../../lib/enquiry';
 
 interface QuoteModalProps {
   isOpen: boolean;
@@ -27,6 +28,8 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [sendError, setSendError] = useState('');
+  const [honeypot, setHoneypot] = useState('');
 
   useEffect(() => {
     if (preselectedService) {
@@ -67,15 +70,20 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
 
+    setSendError('');
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      await sendEnquiry({ ...formData, source: 'quote', website: honeypot });
       setIsSuccess(true);
-    }, 900);
+    } catch (err) {
+      setSendError(err instanceof Error ? err.message : 'We could not send your enquiry right now.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -156,7 +164,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                   </div>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="relative space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-semibold text-[#0B2545] uppercase tracking-wider mb-1">
@@ -264,6 +272,28 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                       className="w-full px-3.5 py-3 sm:py-2.5 rounded-xl border border-slate-200 text-base sm:text-sm text-slate-800 focus:outline-none focus:border-[#0A8BD3] focus:ring-2 focus:ring-[#0A8BD3]/15 resize-none"
                     />
                   </div>
+
+                  {/* Spam trap: hidden from people, tempting to bots */}
+                  <div aria-hidden="true" className="absolute -left-[9999px] w-px h-px overflow-hidden">
+                    <label>
+                      Website
+                      <input type="text" tabIndex={-1} autoComplete="off" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} />
+                    </label>
+                  </div>
+
+                  {sendError && (
+                    <div role="alert" className="rounded-xl bg-red-50 ring-1 ring-red-200 px-4 py-3 text-sm text-red-700">
+                      {sendError} Please call us on{' '}
+                      <a href={`tel:${COMPANY_INFO.phones[0].replace(/\s+/g, '')}`} className="font-semibold underline">
+                        {COMPANY_INFO.phones[0]}
+                      </a>{' '}
+                      or email{' '}
+                      <a href={`mailto:${COMPANY_INFO.email}`} className="font-semibold underline">
+                        {COMPANY_INFO.email}
+                      </a>
+                      .
+                    </div>
+                  )}
 
                   <button
                     type="submit"

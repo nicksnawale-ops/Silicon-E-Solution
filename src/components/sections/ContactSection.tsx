@@ -12,6 +12,7 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { COMPANY_INFO, SERVICES_LIST } from '../../data/content';
+import { sendEnquiry } from '../../lib/enquiry';
 
 export const ContactSection: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -26,6 +27,8 @@ export const ContactSection: React.FC = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [sendError, setSendError] = useState('');
+  const [honeypot, setHoneypot] = useState('');
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
@@ -41,15 +44,20 @@ export const ContactSection: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
 
+    setSendError('');
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      await sendEnquiry({ ...formData, source: 'contact', website: honeypot });
       setIsSuccess(true);
-    }, 900);
+    } catch (err) {
+      setSendError(err instanceof Error ? err.message : 'We could not send your enquiry right now.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -189,7 +197,7 @@ export const ContactSection: React.FC = () => {
                     Thank You for Your Inquiry!
                   </h4>
                   <p className="text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
-                    Your request regarding <strong className="text-[#0A8BD3]">{formData.service}</strong> has been logged. Our pre-sales engineering desk at Bavdhan, Pune will review the scope and contact you promptly.
+                    Your request regarding <strong className="text-[#0A8BD3]">{formData.service}</strong> has been sent. Our pre-sales engineering desk at Bavdhan, Pune will review the scope and contact you promptly.
                   </p>
                   <button
                     onClick={() => {
@@ -209,7 +217,7 @@ export const ContactSection: React.FC = () => {
                   </button>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="relative space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-semibold text-[#0B2545] uppercase tracking-wider mb-1">
@@ -317,6 +325,28 @@ export const ContactSection: React.FC = () => {
                       className="w-full px-4 py-3 sm:py-2.5 rounded-xl border border-slate-200 text-base sm:text-sm text-slate-800 focus:outline-none focus:border-[#0A8BD3] focus:ring-2 focus:ring-[#0A8BD3]/15 resize-none"
                     />
                   </div>
+
+                  {/* Spam trap: hidden from people, tempting to bots */}
+                  <div aria-hidden="true" className="absolute -left-[9999px] w-px h-px overflow-hidden">
+                    <label>
+                      Website
+                      <input type="text" tabIndex={-1} autoComplete="off" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} />
+                    </label>
+                  </div>
+
+                  {sendError && (
+                    <div role="alert" className="rounded-xl bg-red-50 ring-1 ring-red-200 px-4 py-3 text-sm text-red-700">
+                      {sendError} Please call us on{' '}
+                      <a href={`tel:${COMPANY_INFO.phones[0].replace(/\s+/g, '')}`} className="font-semibold underline">
+                        {COMPANY_INFO.phones[0]}
+                      </a>{' '}
+                      or email{' '}
+                      <a href={`mailto:${COMPANY_INFO.email}`} className="font-semibold underline">
+                        {COMPANY_INFO.email}
+                      </a>
+                      .
+                    </div>
+                  )}
 
                   <button
                     type="submit"
