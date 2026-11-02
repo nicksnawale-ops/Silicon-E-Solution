@@ -339,3 +339,51 @@ section, [id] {
     backdrop-filter: blur(24px);
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* Scroll-linked section transitions (pure CSS, progressive).          */
+/* Driven by each section's position in the viewport — nothing waits  */
+/* on a JS trigger, and browsers without scroll timelines (or users who */
+/* prefer reduced motion) simply see the sections as normal.           */
+/* ------------------------------------------------------------------ */
+@keyframes section-rise {
+  from { opacity: 0.3; transform: translate3d(0, 56px, 0) scale(0.975); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes seam-draw {
+  from { width: 0; opacity: 0; }
+  to { width: min(900px, 80%); opacity: 1; }
+}
+@keyframes pattern-drift {
+  from { transform: translate3d(0, -28px, 0); }
+  to { transform: translate3d(0, 28px, 0); }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* Sections clip overflow (which makes them scroll containers), so each
+       section publishes a named view timeline that its content follows. */
+    main section.surface-ice {
+      view-timeline: --section block;
+    }
+    /* 1. Content flows in as the section enters */
+    main section.surface-ice > [class*='max-w-7xl'] {
+      animation: section-rise linear both;
+      animation-timeline: --section;
+      animation-range: entry 0% entry 60%;
+      transform-origin: 50% 0%;
+    }
+    /* 2. The seam hairline draws outwards from the centre */
+    main section.surface-ice::after {
+      animation: seam-draw linear both;
+      animation-timeline: --section;
+      animation-range: entry 0% entry 40%;
+    }
+    /* 3. Background pattern drifts slower than the content (depth) */
+    main section.surface-ice--dots::before,
+    main section.surface-ice--grid::before {
+      animation: pattern-drift linear both;
+      animation-timeline: --section;
+      animation-range: cover 0% cover 100%;
+    }
+  }
+}
