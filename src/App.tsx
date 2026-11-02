@@ -20,12 +20,10 @@ import { CtaBand } from './components/sections/CtaBand';
 import { ContactSection } from './components/sections/ContactSection';
 import { Footer } from './components/sections/Footer';
 import { Preloader } from './components/ui/Preloader';
-import { SectionConnector } from './components/ui/SectionConnector';
 import { FloatingActions } from './components/ui/FloatingActions';
 import { ServiceModal } from './components/ui/ServiceModal';
 import { QuoteModal } from './components/ui/QuoteModal';
 import { ServiceItem } from './types';
-import { SERVICES_LIST } from './data/content';
 import { ServicesPage } from './pages/ServicesPage';
 import { AboutPage } from './pages/AboutPage';
 import { IndustriesPage } from './pages/IndustriesPage';
@@ -259,9 +257,6 @@ export default function App() {
 
             {/* 7-Step Turnkey Approach Wheel */}
             <ApproachWheel />
-
-            {/* Hand-off: 7 delivery phases → all services */}
-            <SectionConnector from={{ value: '07', label: 'Phases' }} to={{ value: String(SERVICES_LIST.length), label: 'Services' }} />
 
             {/* Services */}
             <ServicesGrid onSelectService={(service) => setSelectedService(service)} />
