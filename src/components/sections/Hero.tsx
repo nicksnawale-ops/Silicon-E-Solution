@@ -51,13 +51,25 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
     if (!ctx) return;
 
     let animationFrameId: number;
+    // Logical (CSS-pixel) size the animation works in.
     let width = 0;
     let height = 0;
 
+    // Size the drawing buffer to the canvas's actual on-screen size × the
+    // screen's pixel density, so it stays sharp on high-DPI phones and is never
+    // stretched when the hero's height changes after load. Drawing still uses
+    // CSS-pixel coordinates via the context transform, so the animation itself
+    // is unchanged.
     const updateDimensions = () => {
-      const parent = canvas.parentElement;
-      width = canvas.width = Math.min(window.innerWidth, parent?.clientWidth || window.innerWidth);
-      height = canvas.height = parent?.clientHeight || window.innerHeight;
+      const rect = canvas.getBoundingClientRect();
+      const cssW = Math.max(1, Math.round(rect.width));
+      const cssH = Math.max(1, Math.round(rect.height));
+      const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+      canvas.width = Math.round(cssW * dpr);
+      canvas.height = Math.round(cssH * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      width = cssW;
+      height = cssH;
     };
 
     updateDimensions();
@@ -99,11 +111,23 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
     const packets: Packet[] = [];
     const maxPackets = isMobile ? 4 : 8;
 
+    // Re-fit whenever the canvas box changes size (content settling, rotation,
+    // mobile address bar). Nodes keep their relative positions.
     const handleResize = () => {
+      const prevW = width;
+      const prevH = height;
       updateDimensions();
+      if (prevW && prevH && (prevW !== width || prevH !== height)) {
+        for (const n of nodes) {
+          n.x *= width / prevW;
+          n.y *= height / prevH;
+        }
+      }
     };
 
     window.addEventListener('resize', handleResize, { passive: true });
+    const resizeObserver = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(handleResize) : null;
+    resizeObserver?.observe(canvas);
 
     let isVisible = true;
     const observer = new IntersectionObserver(
@@ -210,6 +234,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
 
     return () => {
       window.removeEventListener('resize', handleResize);
+      resizeObserver?.disconnect();
       cancelAnimationFrame(animationFrameId);
       observer.disconnect();
     };
