@@ -67,6 +67,9 @@ export function Counter({ end, suffix }: { end: number; suffix: string }) {
   );
 }
 
+/** The "Trusted by…" client logo strip under the stats. Hidden for now; set to true to bring it back. */
+const SHOW_TRUSTED_STRIP = false;
+
 export const StatsAndMarquee: React.FC = () => {
   return (
     <section
@@ -125,6 +128,7 @@ export const StatsAndMarquee: React.FC = () => {
       </div>
 
       {/* Trusted-by strip */}
+      {SHOW_TRUSTED_STRIP && (
       <div className="relative mt-14 z-[1]">
         {/* Eyebrow with hairlines */}
         <motion.div
@@ -218,6 +222,7 @@ export const StatsAndMarquee: React.FC = () => {
           …and many more institutions across India
         </p>
       </div>
+      )}
 
       <style>{`
         @keyframes client-marquee {
