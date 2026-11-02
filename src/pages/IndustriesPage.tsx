@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import {
   ChevronRight,
@@ -246,6 +246,7 @@ const SubHeading: React.FC<{ title: string; sub?: string }> = ({ title, sub }) =
 
 export const IndustriesPage: React.FC<IndustriesPageProps> = ({ onSelectService, onOpenQuote }) => {
   const [active, setActive] = useState<IndustryId>('healthcare');
+  const tabBarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const prev = document.title;
@@ -269,6 +270,16 @@ export const IndustriesPage: React.FC<IndustriesPageProps> = ({ onSelectService,
     els.forEach((el) => io.observe(el));
     return () => io.disconnect();
   }, []);
+
+  // Keep the active sector tab visible in the horizontally scrolling bar
+  // (scrolls only the bar, never the page).
+  useEffect(() => {
+    const bar = tabBarRef.current;
+    const tab = document.getElementById(`tab-${active}`);
+    if (!bar || !tab) return;
+    const left = tab.offsetLeft - (bar.clientWidth - tab.offsetWidth) / 2;
+    bar.scrollTo({ left: Math.max(0, left), behavior: 'smooth' });
+  }, [active]);
 
   const jump = (id: IndustryId) => navigate(`/industries#${id}`);
 
@@ -368,13 +379,14 @@ export const IndustriesPage: React.FC<IndustriesPageProps> = ({ onSelectService,
       {/* ================= Sticky sector bar ================= */}
       <div className="sticky-tabbar sticky top-16 z-30 py-3 border-y border-[#0A8BD3]/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+          <div ref={tabBarRef} className="relative flex items-center gap-1.5 overflow-x-auto no-scrollbar">
             {INDUSTRIES.map((ind) => {
               const Icon = industryIcons[ind.icon];
               const isActive = active === ind.id;
               return (
                 <button
                   key={ind.id}
+                  id={`tab-${ind.id}`}
                   type="button"
                   onClick={() => jump(ind.id)}
                   aria-current={isActive ? 'true' : undefined}
