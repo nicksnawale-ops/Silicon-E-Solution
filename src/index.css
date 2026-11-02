@@ -320,19 +320,6 @@ section, [id] {
   .cta-drift, .cta-spin { animation: none; }
 }
 
-/* Section hand-off connector: packets travelling down the signal line. */
-@keyframes conn-drop {
-  0% { transform: translateY(0); opacity: 0; }
-  12% { opacity: 1; }
-  88% { opacity: 1; }
-  100% { transform: translateY(var(--conn-h, 200px)); opacity: 0; }
-}
-@keyframes conn-ring { 0% { transform: scale(0.85); opacity: 0.55; } 100% { transform: scale(1.35); opacity: 0; } }
-.conn-drop { animation: conn-drop 2.6s cubic-bezier(0.45, 0, 0.55, 1) infinite; animation-delay: var(--delay, 0s); }
-.conn-ring { animation: conn-ring 2.4s ease-out infinite; animation-delay: var(--delay, 0s); }
-@media (prefers-reduced-motion: reduce) {
-  .conn-drop, .conn-ring { animation: none; opacity: 0; }
-}
 
 /* Sticky filter / index bars (Services, Industries, Solutions).
    Touch devices: solid background on its own compositing layer — a second
