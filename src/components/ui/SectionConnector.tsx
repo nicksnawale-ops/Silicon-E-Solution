@@ -30,7 +30,7 @@ export const SectionConnector: React.FC<Props> = ({ from, to }) => (
         }}
         initial={{ scaleX: 0, opacity: 0 }}
         whileInView={{ scaleX: 1, opacity: 1 }}
-        viewport={{ once: true, amount: 1 }}
+        viewport={{ once: true, amount: 0.5 }}
         transition={{ duration: 1.4, ease: EASE }}
       />
 
@@ -40,7 +40,7 @@ export const SectionConnector: React.FC<Props> = ({ from, to }) => (
         style={{ background: 'linear-gradient(180deg, rgba(10,139,211,0) 0%, rgba(10,139,211,0.55) 30%, rgba(141,198,63,0.55) 70%, rgba(141,198,63,0) 100%)' }}
         initial={{ scaleY: 0 }}
         whileInView={{ scaleY: 1 }}
-        viewport={{ once: true, amount: 1 }}
+        viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 1, ease: EASE }}
       >
         {[0, 0.85, 1.7].map((d) => (
@@ -64,7 +64,7 @@ export const SectionConnector: React.FC<Props> = ({ from, to }) => (
         className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
         initial={{ opacity: 0, scale: 0.85, y: 8 }}
         whileInView={{ opacity: 1, scale: 1, y: 0 }}
-        viewport={{ once: true, amount: 1 }}
+        viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 0.7, delay: 0.35, ease: EASE }}
       >
         <span className="conn-ring absolute inset-0 rounded-full ring-2 ring-[#4FC3F7]/50" />
