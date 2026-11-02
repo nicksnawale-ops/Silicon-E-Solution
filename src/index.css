@@ -339,3 +339,15 @@ section, [id] {
     backdrop-filter: blur(24px);
   }
 }
+
+/* DC lighting scene: each of 3 modes owns a third of the loop, crossfading. */
+@keyframes dc-mode {
+  0% { opacity: 0; }
+  6%, 30% { opacity: 1; }
+  39%, 100% { opacity: 0; }
+}
+.dc-mode { opacity: 0; animation: dc-mode var(--d, 7.5s) ease-in-out infinite; animation-delay: var(--delay, 0s); }
+@media (prefers-reduced-motion: reduce) {
+  .sv-stage .dc-mode { animation: none !important; }
+  .sv-stage .dc-mode--first { opacity: 1; }
+}

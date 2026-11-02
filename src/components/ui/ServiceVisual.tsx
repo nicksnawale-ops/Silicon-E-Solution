@@ -478,39 +478,94 @@ const Lighting = () => (
   </>
 );
 
-/** RFTP DC lighting: one DC hub, one cable carrying power + control, lights cycling modes. */
+/**
+ * RFTP DC lighting: a DC hub pushes power + control pulses down ONE ceiling
+ * cable; slim linear luminaires cast soft beams and floor pools that crossfade
+ * between Warm, Cool and Eco modes.
+ */
 const DcLighting = () => {
-  const lights = [104, 158, 212, 266];
-  const modes = [C.amber, '#FFFFFF', C.cyan];
+  const lights = [116, 166, 216, 266];
+  const modes = [
+    { id: 'warm', label: 'WARM', color: C.amber },
+    { id: 'cool', label: 'COOL', color: C.cyan },
+    { id: 'eco', label: 'ECO', color: C.lime },
+  ];
+  const CYCLE = 7.5; // seconds for a full warm → cool → eco loop
+  const modeSeq = (k: number, extra = 0) => seq(k * (CYCLE / 3) + extra, CYCLE);
   return (
     <>
-      {/* DC power & control hub */}
-      <rect x={18} y={46} width={54} height={46} rx={7} fill="#0E3A66" stroke={C.cyan} strokeWidth={1.5} />
-      <path d="M 47 54 L 39 70 L 46 70 L 42 84 L 54 64 L 47 64 L 51 54 Z" fill={C.lime} className="sv-blink" style={seq(0, 2.2)} />
-      <rect x={26} y={86} width={38} height={2} rx={1} fill={C.dim} />
-      {/* The single RFTP cable */}
-      <path d="M 72 69 H 92 V 24 H 300" fill="none" stroke={C.edge} strokeWidth={2.2} />
-      <path d="M 72 69 H 92 V 24 H 300" fill="none" stroke={C.cyan} strokeWidth={1.2} strokeDasharray="4 10"
-        className="sv-dash" style={{ '--dash': '-28', '--d': '1s' } as V} />
+      <defs>
+        {modes.map((m) => (
+          <React.Fragment key={m.id}>
+            <linearGradient id={`dc-beam-${m.id}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stopColor={m.color} stopOpacity="0.85" />
+              <stop offset="0.55" stopColor={m.color} stopOpacity="0.28" />
+              <stop offset="1" stopColor={m.color} stopOpacity="0" />
+            </linearGradient>
+            <radialGradient id={`dc-pool-${m.id}`} cx="0.5" cy="0.5" r="0.5">
+              <stop offset="0" stopColor={m.color} stopOpacity="0.9" />
+              <stop offset="1" stopColor={m.color} stopOpacity="0" />
+            </radialGradient>
+          </React.Fragment>
+        ))}
+      </defs>
+
+      {/* Floor */}
+      <line x1={88} y1={112} x2={300} y2={112} stroke={C.line} />
+
+      {/* Light beams + floor pools, crossfading per mode */}
       {lights.map((x, i) => (
-        <g key={x}>
-          <line x1={x} y1={24} x2={x} y2={38} stroke={C.dim} />
-          <rect x={x - 16} y={38} width={32} height={7} rx={3.5} fill="#0E3A66" stroke={C.edge} />
+        <g key={`beam-${x}`} opacity={0.75}>
           {modes.map((m, k) => (
-            <React.Fragment key={k}>
-              <path d={`M ${x - 12} 46 L ${x - 22} 108 L ${x + 22} 108 L ${x + 12} 46 Z`} fill={m} opacity={0.14}
-                className="sv-seq" style={seq(i * 0.25 + k * 2, 6)} />
-              <rect x={x - 13} y={44} width={26} height={2.5} rx={1.2} fill={m}
-                className="sv-seq" style={seq(i * 0.25 + k * 2, 6)} />
-            </React.Fragment>
+            <g key={m.id} className={`dc-mode ${k === 0 ? 'dc-mode--first' : ''}`} style={modeSeq(k, i * 0.12)}>
+              <path d={`M ${x - 15} 33 L ${x - 25} 111 L ${x + 25} 111 L ${x + 15} 33 Z`} fill={`url(#dc-beam-${m.id})`} />
+              <ellipse cx={x} cy={112} rx={27} ry={5} fill={`url(#dc-pool-${m.id})`} />
+            </g>
           ))}
         </g>
       ))}
-      {/* Mode selector: warm · cool · dim */}
+
+      {/* DC power & control hub */}
+      <rect x={14} y={42} width={56} height={60} rx={9} fill="#0E3A66" stroke={C.cyan} strokeWidth={1.4} />
+      <path d="M 44 50 L 35 68 L 42 68 L 38 84 L 51 63 L 44 63 L 48 50 Z" fill={C.lime} />
+      <text x={42} y={96} textAnchor="middle" fontSize={7} fontFamily="ui-monospace, monospace" fontWeight={700} fill={C.dim} letterSpacing={1}>DC HUB</text>
+      <circle cx={62} cy={50} r={2} fill={C.lime} className="sv-blink" style={seq(0, 1.4)} />
+
+      {/* The single RFTP cable: hub → ceiling run */}
+      <path d="M 70 56 H 82 V 20 H 300" fill="none" stroke={C.edge} strokeWidth={2.4} strokeLinejoin="round" />
+      <path d="M 70 56 H 82 V 20 H 300" fill="none" stroke={C.cyan} strokeWidth={1.1} strokeDasharray="3 9" strokeLinejoin="round"
+        className="sv-dash" style={{ '--dash': '-24', '--d': '0.9s' } as V} />
+      <text x={296} y={14} textAnchor="end" fontSize={6.5} fontFamily="ui-monospace, monospace" fontWeight={700} fill={C.dim} letterSpacing={1}>ONE CABLE · POWER + DATA</text>
+
+      {/* Power + control pulses travelling along the cable to each light */}
+      {lights.map((x, i) => (
+        <Packet key={`p-${x}`} x1={82} y1={20} x2={x} y2={20} d={1.6} delay={i * 0.4} color={C.cyan} r={2.4} />
+      ))}
+
+      {/* Luminaires: drop rods + slim linear fittings with mode-coloured LED strips */}
+      {lights.map((x, i) => (
+        <g key={`lum-${x}`}>
+          <line x1={x} y1={20} x2={x} y2={27} stroke={C.dim} />
+          <rect x={x - 18} y={27} width={36} height={7} rx={3.5} fill="#0E3A66" stroke={C.edge} />
+          {modes.map((m, k) => (
+            <rect key={m.id} x={x - 15} y={31.5} width={30} height={2.5} rx={1.25} fill={m.color}
+              className={`dc-mode ${k === 0 ? 'dc-mode--first' : ''}`} style={{ ...modeSeq(k, i * 0.12), filter: `drop-shadow(0 0 4px ${m.color})` } as V} />
+          ))}
+        </g>
+      ))}
+
+      {/* Mode selector */}
+      <rect x={116} y={120} width={150} height={15} rx={7.5} fill="rgba(255,255,255,0.06)" stroke={C.line} />
       {modes.map((m, k) => (
-        <g key={k}>
-          <circle cx={128 + k * 34} cy={126} r={4.5} fill={m} className="sv-seq" style={seq(k * 2, 6)} />
-          <circle cx={128 + k * 34} cy={126} r={7.5} fill="none" stroke={C.dim} />
+        <g key={`mode-${m.id}`}>
+          <g opacity={0.28}>
+            <rect x={118 + k * 49} y={122} width={48} height={11} rx={5.5} fill={m.color}
+              className={`dc-mode ${k === 0 ? 'dc-mode--first' : ''}`} style={modeSeq(k)} />
+          </g>
+          <circle cx={128 + k * 49} cy={127.5} r={2.6} fill={m.color} />
+          <text x={135 + k * 49} y={130} fontSize={6.5} fontFamily="ui-monospace, monospace" fontWeight={700} fill={C.dim} letterSpacing={0.8}>
+            {m.label}
+          </text>
         </g>
       ))}
     </>
